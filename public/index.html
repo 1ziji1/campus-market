@@ -9,6 +9,7 @@
     --bg:#f4f6fa; --card:#fff; --primary:#2f6df6; --primary-dark:#1f56d6;
     --text:#1f2733; --muted:#7b8794; --border:#e6e9ef;
     --radius:16px; --shadow:0 2px 10px rgba(31,39,51,.06);
+    --danger:#e8503a; --warn:#f0a020;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;}
@@ -24,17 +25,18 @@
     position:sticky;top:0;z-index:30;background:rgba(255,255,255,.88);
     backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
   }
-  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;
+    gap:16px;padding:12px 0;}
   .brand{display:flex;align-items:center;gap:12px;min-width:0;}
   .logo{width:42px;height:42px;flex:none;border-radius:12px;
-    background:linear-gradient(135deg,#5b8dff,#2f6df6);display:grid;place-items:center;font-size:22px;}
+    background:linear-gradient(135deg,#5b8dff,#2f6df6);
+    display:grid;place-items:center;font-size:22px;}
   .brand h1{font-size:18px;margin:0;letter-spacing:.3px;}
   .tagline{margin:0;font-size:12px;color:var(--muted);}
 
   .btn{border:1px solid transparent;background:#eef1f6;color:var(--text);
     border-radius:10px;padding:9px 16px;font-size:14px;cursor:pointer;
-    font-family:inherit;transition:background .18s,color .18s,transform .18s;
-    white-space:nowrap;}
+    font-family:inherit;transition:.18s;white-space:nowrap;}
   .btn:active{transform:scale(.98);}
   .btn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(47,109,246,.25);}
   .btn-primary:hover{background:var(--primary-dark);}
@@ -50,6 +52,15 @@
 
   .disclaimer{margin:0 0 16px;padding:10px 14px;font-size:13px;
     background:#fff8e6;border:1px solid #ffe4a3;color:#8a6200;border-radius:12px;}
+
+  .verify-banner{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:#eef3ff;border:1px solid #cfdcff;color:#2f6df6;
+    border-radius:12px;padding:11px 14px;margin:0 0 16px;font-size:13.5px;
+    flex-wrap:wrap;
+  }
+  .verify-banner.done{background:#e7f6ee;border-color:#b6e0c8;color:#12a35a;}
+  .verify-banner .btn{padding:6px 12px;font-size:13px;}
 
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;background:#fff;
     border:1px solid var(--border);border-radius:var(--radius);padding:12px;
@@ -96,11 +107,17 @@
   .contact{display:flex;align-items:center;gap:6px;margin-top:10px;
     background:#f7f9fc;border:1px dashed var(--border);border-radius:10px;
     padding:6px 9px;font-size:13px;}
+  .contact.locked{background:#fff8e6;border-color:#ffe4a3;}
   .contact-label{color:var(--muted);font-size:12px;flex:none;}
   .contact-value{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
+  .contact-value.locked{color:var(--warn);font-weight:500;font-size:12.5px;}
   .copy-btn{flex:none;border:none;background:#e8eeff;color:var(--primary);
     border-radius:6px;padding:3px 8px;font-size:12px;cursor:pointer;font-family:inherit;}
   .copy-btn:hover{background:#dbe6ff;}
+  .unlock-btn{flex:none;border:none;background:#fff3d6;color:#a06b00;
+    border-radius:6px;padding:3px 9px;font-size:12px;cursor:pointer;font-family:inherit;
+    font-weight:600;}
+  .unlock-btn:hover{background:#ffeab5;}
   .card-footer{display:flex;align-items:center;justify-content:space-between;
     gap:8px;margin-top:auto;padding-top:10px;flex-wrap:wrap;}
   .time{font-size:12px;color:#a5aeb9;}
@@ -131,12 +148,16 @@
   .field label{font-size:13.5px;font-weight:600;color:#3c4757;}
   .req{color:#e8503a;}
   .form input[type="text"],.form input[type="number"],.form input[type="file"],
-  .form textarea{font-family:inherit;font-size:14px;color:var(--text);
+  .form textarea,.form select{
+    font-family:inherit;font-size:14px;color:var(--text);
     border:1px solid var(--border);border-radius:10px;padding:10px 12px;
     background:#fafbfd;outline:none;transition:.18s;width:100%;}
+  .form select{cursor:pointer;appearance:none;
+    background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237b8794' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
   .form textarea{resize:vertical;min-height:88px;}
-  .form input:focus,.form textarea:focus{border-color:var(--primary);
-    background:#fff;box-shadow:0 0 0 3px rgba(47,109,246,.12);}
+  .form input:focus,.form textarea:focus,.form select:focus{
+    border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(47,109,246,.12);}
   .form input[type="file"]{padding:8px;background:#fff;cursor:pointer;font-size:13px;}
   .row{display:flex;gap:12px;}
   .row .field{flex:1;min-width:0;}
@@ -150,6 +171,13 @@
     cursor:pointer;font-family:inherit;}
 
   .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px;}
+
+  .verify-q-box{
+    background:#eef3ff;border:1px solid #cfdcff;border-radius:12px;
+    padding:14px 16px;font-size:14.5px;color:#1f2733;line-height:1.6;
+    font-weight:500;word-break:break-word;
+  }
+  .verify-err{color:var(--danger);font-size:13px;min-height:18px;margin:2px 0 0;}
 
   #toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
     background:rgba(17,24,39,.93);color:#fff;padding:10px 20px;border-radius:999px;
@@ -187,8 +215,13 @@
 
 <main class="wrap">
   <p class="disclaimer">
-    ⚠️ 本平台仅提供二手物品信息展示，不提供在线沟通与交易功能。请自行核实信息真伪，建议线下当面交易，注意人身与财产安全。
+    ⚠️ 本平台仅提供二手物品信息展示，不提供在线沟通与交易功能。请自行核实信息真伪，建议线下当面交易。
   </p>
+
+  <div class="verify-banner" id="verifyBanner" hidden>
+    <span id="verifyBannerText">🔒 为保障校园信息安全，请先完成验证</span>
+    <button class="btn btn-primary" id="verifyBannerBtn" type="button">立即验证</button>
+  </div>
 
   <section class="toolbar">
     <input id="searchInput" type="search" placeholder="🔍 搜索物品名称或描述…" autocomplete="off">
@@ -218,10 +251,9 @@
   <div class="wrap">校园二手集市 · 仅用于信息共享，不参与任何交易</div>
 </footer>
 
-<!-- ============ 发布弹窗 ============ -->
 <div class="modal" id="formModal" hidden>
   <div class="modal-backdrop" data-close></div>
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+  <div class="modal-card" role="dialog" aria-modal="true">
     <div class="modal-head">
       <h2 id="formTitle">发布物品</h2>
       <button class="icon-btn" type="button" data-close aria-label="关闭">✕</button>
@@ -230,9 +262,14 @@
     <form id="itemForm" class="form" novalidate>
       <div class="field">
         <label for="f-campus">校区 <span class="req">*</span></label>
-        <input id="f-campus" name="campus" type="text" list="campusList"
-               placeholder="例如：东校区" maxlength="20" required>
-        <datalist id="campusList"></datalist>
+        <select id="f-campus" name="campus" required>
+          <option value="">请选择校区</option>
+          <option value="南湖校区">南湖校区</option>
+          <option value="浑南校区">浑南校区</option>
+          <option value="__other__">其他（自填）</option>
+        </select>
+        <input id="f-campus-other" name="campusOther" type="text"
+               placeholder="请输入校区名称" maxlength="20" hidden>
       </div>
 
       <div class="row">
@@ -265,7 +302,7 @@
         <label for="f-contact">联系方式 <span class="req">*</span></label>
         <input id="f-contact" name="contact" type="text" maxlength="60"
                placeholder="微信 / 手机号 / QQ" required>
-        <p class="hint">联系方式将公开展示，请自行判断信息安全。</p>
+        <p class="hint">联系方式将公开展示给已通过验证的访客。</p>
       </div>
 
       <div class="form-actions">
@@ -276,12 +313,39 @@
   </div>
 </div>
 
+<div class="modal" id="verifyModal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2>访问验证</h2>
+      <button class="icon-btn" type="button" data-close aria-label="关闭">✕</button>
+    </div>
+    <div class="form">
+      <p class="hint" style="margin:0;font-size:13.5px;">
+        为保障校园信息安全，请回答以下问题：
+      </p>
+      <div class="verify-q-box" id="verifyQuestion">加载中…</div>
+      <div class="field">
+        <label for="verifyAnswer">你的答案</label>
+        <input id="verifyAnswer" type="text" maxlength="200"
+               placeholder="请输入答案" autocomplete="off">
+      </div>
+      <div class="verify-err" id="verifyErr"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close>取消</button>
+        <button type="button" class="btn btn-primary" id="verifySubmitBtn">提交验证</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   'use strict';
 
-  const OWNERS_KEY = 'campus_market_owners_v1';
-  const CAMPUS_SUGGEST = ['东校区', '西校区', '南校区', '北校区', '主校区'];
+  const OWNERS_KEY  = 'campus_market_owners_v1';
+  const VERIFY_KEY  = 'campus_market_verify_token_v1';
+  const CAMPUS_FIXED = ['南湖校区', '浑南校区'];
 
   const $ = (sel, root = document) => root.querySelector(sel);
 
@@ -296,32 +360,43 @@
   const itemForm     = $('#itemForm');
   const imageInput   = $('#imageInput');
   const previewEl    = $('#preview');
-  const campusDatalist = $('#campusList');
   const submitBtn    = $('#submitBtn');
+  const campusSelect = $('#f-campus');
+  const campusOther  = $('#f-campus-other');
+
+  const verifyBanner     = $('#verifyBanner');
+  const verifyBannerText = $('#verifyBannerText');
+  const verifyBannerBtn  = $('#verifyBannerBtn');
+  const verifyModal      = $('#verifyModal');
+  const verifyQuestionEl = $('#verifyQuestion');
+  const verifyAnswerEl   = $('#verifyAnswer');
+  const verifyErrEl      = $('#verifyErr');
+  const verifySubmitBtn  = $('#verifySubmitBtn');
 
   let items = [];
   let owners = {};
   let pendingImage = '';
   let submitting = false;
 
+  let verifyRequired = false;
+  let verifyQuestion = '';
+  let verifyToken = localStorage.getItem(VERIFY_KEY) || '';
+  let pendingAction = null;
+
   function escapeHtml(str) {
     return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[c]));
   }
-
   function priceValue(p) {
     if (p === '' || p === null || p === undefined) return Infinity;
-    const n = Number(p);
-    return isNaN(n) ? Infinity : n;
+    const n = Number(p); return isNaN(n) ? Infinity : n;
   }
-
   function formatPrice(p) {
     const v = priceValue(p);
     if (v === Infinity) return '面议';
     return '¥' + (Number.isInteger(v) ? v.toLocaleString('zh-CN') : v.toFixed(2));
   }
-
   function timeAgo(ts) {
     const diff = Date.now() - ts;
     const m = Math.floor(diff / 60000);
@@ -333,32 +408,24 @@
     if (d < 30) return d + ' 天前';
     return new Date(ts).toLocaleDateString('zh-CN');
   }
-
   let toastTimer = null;
   function toast(msg) {
     let el = document.getElementById('toast');
     if (!el) {
       el = document.createElement('div');
-      el.id = 'toast';
-      document.body.appendChild(el);
+      el.id = 'toast'; document.body.appendChild(el);
     }
     el.textContent = msg;
     el.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove('show'), 1900);
   }
-
   async function copyText(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast('联系方式已复制');
-    } catch (err) {
+    try { await navigator.clipboard.writeText(text); toast('联系方式已复制'); }
+    catch (err) {
       const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
       try { document.execCommand('copy'); toast('联系方式已复制'); }
       catch (e) { toast('复制失败，请手动选择'); }
       ta.remove();
@@ -373,6 +440,38 @@
     try { localStorage.setItem(OWNERS_KEY, JSON.stringify(owners)); } catch (e) {}
   }
 
+  function verifyHeaders(extra) {
+    const h = Object.assign({}, extra || {});
+    if (verifyToken) h['X-Verify-Token'] = verifyToken;
+    return h;
+  }
+
+  async function loadVerifyQuestion() {
+    try {
+      const res = await fetch('/api/verify/question', { cache: 'no-store' });
+      const data = await res.json();
+      verifyRequired = !!data.required;
+      verifyQuestion = data.question || '';
+      updateVerifyBanner();
+    } catch (e) { console.error(e); }
+  }
+
+  function updateVerifyBanner() {
+    if (!verifyRequired) { verifyBanner.hidden = true; return; }
+    verifyBanner.hidden = false;
+    if (verifyToken) {
+      verifyBanner.classList.add('done');
+      verifyBannerText.textContent = '✅ 你已通过验证，可发布物品并查看联系方式';
+      verifyBannerBtn.textContent = '已通过';
+      verifyBannerBtn.disabled = true;
+    } else {
+      verifyBanner.classList.remove('done');
+      verifyBannerText.textContent = '🔒 为保障校园信息安全，请先完成验证';
+      verifyBannerBtn.textContent = '立即验证';
+      verifyBannerBtn.disabled = false;
+    }
+  }
+
   async function fetchItems(silent) {
     if (!silent) {
       grid.innerHTML = '';
@@ -380,7 +479,10 @@
       statsEl.textContent = '正在加载…';
     }
     try {
-      const res = await fetch('/api/items', { cache: 'no-store' });
+      const res = await fetch('/api/items', {
+        cache: 'no-store',
+        headers: verifyHeaders()
+      });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       items = Array.isArray(data.items) ? data.items : [];
@@ -400,14 +502,17 @@
   async function apiCreate(payload) {
     const res = await fetch('/api/items', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: verifyHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(payload)
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || '发布失败');
+    if (!res.ok) {
+      const err = new Error(data.error || '发布失败');
+      err.needVerify = !!data.needVerify;
+      throw err;
+    }
     return data;
   }
-
   async function apiUpdate(id, status) {
     const res = await fetch('/api/items/' + encodeURIComponent(id), {
       method: 'PATCH',
@@ -418,7 +523,6 @@
     if (!res.ok) throw new Error(data.error || '操作失败');
     return data.item;
   }
-
   async function apiDelete(id) {
     const res = await fetch('/api/items/' + encodeURIComponent(id), {
       method: 'DELETE',
@@ -433,6 +537,11 @@
   function cardHtml(it) {
     const isMine = !!owners[it.id];
     const sold = it.status === 'sold';
+    const contactHtml = it.contact
+      ? `<span class="contact-value" title="${escapeHtml(it.contact)}">${escapeHtml(it.contact)}</span>
+         <button class="copy-btn" type="button" data-copy="${escapeHtml(it.contact)}">复制</button>`
+      : `<span class="contact-value locked">🔒 请先完成验证后查看</span>
+         <button class="unlock-btn" type="button" data-action="unlock">立即验证</button>`;
 
     return `
       <article class="card${sold ? ' is-sold' : ''}" data-id="${it.id}">
@@ -454,10 +563,9 @@
 
           ${it.description ? `<p class="desc">${escapeHtml(it.description)}</p>` : ``}
 
-          <div class="contact">
+          <div class="contact${it.contact ? '' : ' locked'}">
             <span class="contact-label">联系方式</span>
-            <span class="contact-value" title="${escapeHtml(it.contact)}">${escapeHtml(it.contact)}</span>
-            <button class="copy-btn" type="button" data-copy="${escapeHtml(it.contact)}">复制</button>
+            ${contactHtml}
           </div>
 
           <div class="card-footer">
@@ -487,11 +595,9 @@
       }
       return true;
     });
-
     list.sort((a, b) => {
       if (sort === 'priceAsc' || sort === 'priceDesc') {
-        const av = priceValue(a.price);
-        const bv = priceValue(b.price);
+        const av = priceValue(a.price), bv = priceValue(b.price);
         if (av === bv) return b.createdAt - a.createdAt;
         if (av === Infinity) return 1;
         if (bv === Infinity) return -1;
@@ -516,31 +622,91 @@
   }
 
   function refreshCampusOptions() {
-    const set = new Set(CAMPUS_SUGGEST);
+    const set = new Set(CAMPUS_FIXED);
     items.forEach((it) => { if (it.campus) set.add(it.campus); });
 
     const cur = campusFilter.value;
     campusFilter.innerHTML = '<option value="">全部校区</option>' +
       [...set].map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-    campusFilter.value = cur;
-
-    campusDatalist.innerHTML = [...set]
-      .map((c) => `<option value="${escapeHtml(c)}"></option>`).join('');
+    if ([...set].includes(cur)) campusFilter.value = cur;
   }
 
   function openForm() {
+    if (verifyRequired && !verifyToken) {
+      pendingAction = 'open-form';
+      openVerifyModal();
+      return;
+    }
     itemForm.reset();
     pendingImage = '';
     previewEl.hidden = true;
     previewEl.innerHTML = '';
+    campusOther.hidden = true;
+    campusOther.value = '';
     formModal.hidden = false;
     document.body.style.overflow = 'hidden';
-    setTimeout(() => { const el = $('#f-campus'); if (el) el.focus(); }, 60);
+    setTimeout(() => campusSelect.focus(), 60);
   }
-
   function closeForm() {
     formModal.hidden = true;
     document.body.style.overflow = '';
+  }
+
+  function openVerifyModal() {
+    verifyErrEl.textContent = '';
+    verifyAnswerEl.value = '';
+    verifyQuestionEl.textContent = verifyQuestion || '（暂无问题）';
+    verifyModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => verifyAnswerEl.focus(), 80);
+  }
+  function closeVerifyModal() {
+    verifyModal.hidden = true;
+    document.body.style.overflow = '';
+    pendingAction = null;
+  }
+
+  async function submitVerify() {
+    const answer = verifyAnswerEl.value.trim();
+    if (!answer) { verifyErrEl.textContent = '请输入答案'; return; }
+
+    verifySubmitBtn.disabled = true;
+    verifySubmitBtn.textContent = '验证中…';
+    verifyErrEl.textContent = '';
+
+    try {
+      const res = await fetch('/api/verify/answer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || '验证失败');
+
+      verifyToken = data.token;
+      localStorage.setItem(VERIFY_KEY, verifyToken);
+      updateVerifyBanner();
+
+      verifyModal.hidden = true;
+      document.body.style.overflow = '';
+
+      toast('✅ 验证通过');
+
+      const action = pendingAction;
+      pendingAction = null;
+
+      if (action === 'open-form') {
+        openForm();
+      } else {
+        fetchItems(true);
+      }
+    } catch (err) {
+      verifyErrEl.textContent = err.message || '验证失败';
+      verifyAnswerEl.select();
+    } finally {
+      verifySubmitBtn.disabled = false;
+      verifySubmitBtn.textContent = '提交验证';
+    }
   }
 
   function compressImage(file, maxSize = 1000, quality = 0.75) {
@@ -555,10 +721,8 @@
           const scale = Math.min(1, maxSize / Math.max(width, height));
           width  = Math.max(1, Math.round(width * scale));
           height = Math.max(1, Math.round(height * scale));
-
           const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
+          canvas.width = width; canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(0, 0, width, height);
@@ -575,32 +739,49 @@
   $('#emptyBtn').addEventListener('click', openForm);
   refreshBtn.addEventListener('click', () => fetchItems());
 
+  verifyBannerBtn.addEventListener('click', () => {
+    if (verifyToken) return;
+    pendingAction = null;
+    openVerifyModal();
+  });
+
+  verifySubmitBtn.addEventListener('click', submitVerify);
+  verifyAnswerEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); submitVerify(); }
+  });
+
   formModal.addEventListener('click', (e) => {
     if (e.target.closest('[data-close]')) closeForm();
   });
+  verifyModal.addEventListener('click', (e) => {
+    if (e.target.closest('[data-close]')) closeVerifyModal();
+  });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !formModal.hidden) closeForm();
+    if (e.key === 'Escape') {
+      if (!verifyModal.hidden) closeVerifyModal();
+      else if (!formModal.hidden) closeForm();
+    }
   });
 
   searchInput.addEventListener('input', render);
   campusFilter.addEventListener('change', render);
   sortSelect.addEventListener('change', render);
 
+  campusSelect.addEventListener('change', () => {
+    if (campusSelect.value === '__other__') {
+      campusOther.hidden = false;
+      campusOther.focus();
+    } else {
+      campusOther.hidden = true;
+      campusOther.value = '';
+    }
+  });
+
   imageInput.addEventListener('change', async () => {
     const file = imageInput.files && imageInput.files[0];
     if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      toast('请选择图片文件');
-      imageInput.value = '';
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      toast('图片不能超过 10MB');
-      imageInput.value = '';
-      return;
-    }
-
+    if (!file.type.startsWith('image/')) { toast('请选择图片文件'); imageInput.value = ''; return; }
+    if (file.size > 10 * 1024 * 1024) { toast('图片不能超过 10MB'); imageInput.value = ''; return; }
     try {
       pendingImage = await compressImage(file);
       previewEl.innerHTML =
@@ -611,13 +792,10 @@
       imageInput.value = '';
     }
   });
-
   previewEl.addEventListener('click', (e) => {
     if (e.target.id === 'clearImg') {
-      pendingImage = '';
-      imageInput.value = '';
-      previewEl.hidden = true;
-      previewEl.innerHTML = '';
+      pendingImage = ''; imageInput.value = '';
+      previewEl.hidden = true; previewEl.innerHTML = '';
     }
   });
 
@@ -626,13 +804,18 @@
     if (submitting) return;
 
     const fd = new FormData(itemForm);
-    const campus      = (fd.get('campus') || '').toString().trim();
+    let campus = (fd.get('campus') || '').toString().trim();
+    if (campus === '__other__') {
+      campus = (fd.get('campusOther') || '').toString().trim();
+      if (!campus) { toast('请填写校区名称'); campusOther.focus(); return; }
+    }
+    if (!campus) { toast('请选择或填写校区'); return; }
+
     const name        = (fd.get('name') || '').toString().trim();
     const description = (fd.get('description') || '').toString().trim();
     const contact     = (fd.get('contact') || '').toString().trim();
     const priceRaw    = (fd.get('price') || '').toString().trim();
 
-    if (!campus)  { toast('请填写校区');   return; }
     if (!name)    { toast('请填写物品名称'); return; }
     if (!contact) { toast('请填写联系方式'); return; }
 
@@ -650,7 +833,6 @@
       const data = await apiCreate(payload);
       owners[data.item.id] = data.ownerKey;
       saveOwners();
-
       items.unshift(data.item);
       refreshCampusOptions();
       render();
@@ -658,7 +840,13 @@
       toast('发布成功！');
     } catch (err) {
       console.error(err);
-      toast(err.message || '发布失败，请重试');
+      if (err.needVerify) {
+        closeForm();
+        pendingAction = 'open-form';
+        openVerifyModal();
+      } else {
+        toast(err.message || '发布失败，请重试');
+      }
     } finally {
       submitting = false;
       submitBtn.disabled = false;
@@ -667,11 +855,15 @@
   });
 
   grid.addEventListener('click', async (e) => {
-    const copyBtn = e.target.closest('[data-copy]');
-    if (copyBtn) {
-      copyText(copyBtn.dataset.copy);
+    const unlockBtn = e.target.closest('[data-action="unlock"]');
+    if (unlockBtn) {
+      pendingAction = 'refresh-list';
+      openVerifyModal();
       return;
     }
+
+    const copyBtn = e.target.closest('[data-copy]');
+    if (copyBtn) { copyText(copyBtn.dataset.copy); return; }
 
     const actionBtn = e.target.closest('[data-action]');
     if (!actionBtn) return;
@@ -698,11 +890,9 @@
         render();
         toast(updated.status === 'sold' ? '已标记为下架' : '已重新上架');
       }
-
       if (action === 'delete') {
         if (!confirm(`确定要删除「${item.name}」吗？此操作不可恢复。`)) {
-          actionBtn.disabled = false;
-          return;
+          actionBtn.disabled = false; return;
         }
         await apiDelete(id);
         items = items.filter((i) => i.id !== id);
@@ -720,7 +910,10 @@
   });
 
   loadOwners();
-  fetchItems();
+  (async function init() {
+    await loadVerifyQuestion();
+    await fetchItems();
+  })();
 
 })();
 </script>
