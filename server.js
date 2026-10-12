@@ -1,8 +1,4 @@
-/* 校园二手集市 —— 后端服务（含后台管理）
- * 零依赖，纯 Node.js 原生模块
- * 启动：node server.js
- * 后台：http://localhost:3000/admin.html
- */
+/* 校园二手集市 —— 后端服务（含后台管理 + 访问验证） */
 'use strict';
 
 const http   = require('http');
@@ -12,21 +8,23 @@ const os     = require('os');
 const crypto = require('crypto');
 
 const PORT           = process.env.PORT || 3000;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';   // ← 请务必修改
-const ADMIN_TOKEN_TTL = 2 * 60 * 60 * 1000;                        // 登录有效期 2 小时
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_TOKEN_TTL = 2 * 60 * 60 * 1000;
 
 const ROOT        = __dirname;
 const PUBLIC_DIR  = path.join(ROOT, 'public');
 const DATA_DIR    = path.join(ROOT, 'data');
 const IMAGES_DIR  = path.join(DATA_DIR, 'images');
 const ITEMS_FILE  = path.join(DATA_DIR, 'items.json');
+const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 
-/* ---------------- 初始化目录 ---------------- */
+/* ---------------- 初始化 ---------------- */
 for (const d of [DATA_DIR, IMAGES_DIR]) {
   if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
 }
-if (!fs.existsSync(ITEMS_FILE)) {
-  fs.writeFileSync(ITEMS_FILE, '[]', 'utf8');
+if (!fs.existsSync(ITEMS_FILE)) fs.writeFileSync(ITEMS_FILE, '[]', 'utf8');
+if (!fs.existsSync(SETTINGS_FILE)) {
+  fs.writeFileSync(SETTINGS_FILE, JSON.stringify({ question: '', answer: '' }, null, 2), 'utf8');
 }
 if (!fs.existsSync(path.join(PUBLIC_DIR, 'index.html'))) {
   console.error('\n[错误] 找不到 public/index.html，请检查文件结构。\n');
@@ -43,14 +41,28 @@ function readItems() {
     return [];
   }
 }
-
 function writeItems(items) {
   const tmp = ITEMS_FILE + '.tmp';
   fs.writeFileSync(tmp, JSON.stringify(items, null, 2), 'utf8');
-  fs.renameSync(tmp, ITEMS_FILE);   // 原子替换
+  fs.renameSync(tmp, ITEMS_FILE);
 }
 
-/* 对外输出：隐藏 ownerKey，图片名转 URL */
+function readSettings() {
+  try {
+    const raw = fs.readFileSync(SETTINGS_FILE, 'utf8');
+    const s = JSON.parse(raw);
+    return {
+      question: String(s.question || '').trim(),
+      answer:   String(s.answer   || '').trim()
+    };
+  } catch (e) {
+    return { question: '', answer: '' };
+  }
+}
+function writeSettings(s) {
+  fs.writeFileSync(SETTINGS_FILE, JSON.stringify(s, null, 2), 'utf8');
+}
+
 function toPublic(item) {
   const { ownerKey, image, ...rest } = item;
   return {
@@ -59,32 +71,45 @@ function toPublic(item) {
   };
 }
 
-/* ---------------- 管理员会话（内存） ---------------- */
+/* ---------------- 管理员会话 ---------------- */
 const adminTokens = new Map();
-
 function createAdminToken() {
-  const token = crypto.randomBytes(24).toString('hex');
-  adminTokens.set(token, Date.now() + ADMIN_TOKEN_TTL);
-  return token;
+  const t = crypto.randomBytes(24).toString('hex');
+  adminTokens.set(t, Date.now() + ADMIN_TOKEN_TTL);
+  return t;
 }
-
 function checkAdmin(req) {
   const auth = req.headers['authorization'] || '';
   const m = /^Bearer\s+([A-Fa-f0-9]+)$/.exec(auth);
   if (!m) return false;
-  const token = m[1];
-  const exp = adminTokens.get(token);
+  const exp = adminTokens.get(m[1]);
   if (!exp) return false;
-  if (exp < Date.now()) { adminTokens.delete(token); return false; }
+  if (exp < Date.now()) { adminTokens.delete(m[1]); return false; }
   return true;
 }
-
 setInterval(() => {
   const now = Date.now();
   for (const [t, exp] of adminTokens) if (exp < now) adminTokens.delete(t);
 }, 10 * 60 * 1000).unref();
 
-/* ---------------- HTTP 小工具 ---------------- */
+/* ---------------- 访客验证 token ---------------- */
+const verifyTokens = new Map();
+function createVerifyToken() {
+  const t = crypto.randomBytes(24).toString('hex');
+  verifyTokens.set(t, { createdAt: Date.now() });
+  return t;
+}
+function checkVerify(req) {
+  const t = req.headers['x-verify-token'];
+  if (!t) return false;
+  return verifyTokens.has(t);
+}
+function clearVerifyTokens() {
+  verifyTokens.clear();
+  console.log('[验证] 已清空所有访客验证 token');
+}
+
+/* ---------------- HTTP 工具 ---------------- */
 function sendJson(res, status, data) {
   const body = JSON.stringify(data);
   res.writeHead(status, {
@@ -94,44 +119,76 @@ function sendJson(res, status, data) {
   });
   res.end(body);
 }
-
 function readBody(req, limit = 8 * 1024 * 1024) {
   return new Promise((resolve, reject) => {
     let size = 0;
     const chunks = [];
     req.on('data', (c) => {
       size += c.length;
-      if (size > limit) {
-        reject(new Error('请求体过大'));
-        req.destroy();
-        return;
-      }
+      if (size > limit) { reject(new Error('请求体过大')); req.destroy(); return; }
       chunks.push(c);
     });
     req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
     req.on('error', reject);
   });
 }
-
 async function readJson(req) {
   const raw = await readBody(req);
   return JSON.parse(raw || '{}');
 }
 
+/* =============== 验证接口 =============== */
+
+function handleGetVerifyQuestion(req, res) {
+  const s = readSettings();
+  const required = !!(s.question && s.answer);
+  sendJson(res, 200, {
+    required,
+    question: required ? s.question : ''
+  });
+}
+
+async function handleVerifyAnswer(req, res) {
+  let payload;
+  try { payload = await readJson(req); }
+  catch (e) { return sendJson(res, 400, { error: '请求格式错误' }); }
+
+  const s = readSettings();
+  if (!s.question || !s.answer) {
+    return sendJson(res, 200, { token: createVerifyToken() });
+  }
+
+  const answer = String(payload.answer || '').trim();
+  if (answer.toLowerCase() !== s.answer.toLowerCase()) {
+    await new Promise((r) => setTimeout(r, 400));
+    return sendJson(res, 401, { error: '答案不正确，请再试一次' });
+  }
+
+  sendJson(res, 200, { token: createVerifyToken() });
+}
+
 /* =============== 公开接口 =============== */
 
 function handleListItems(req, res) {
-  const items = readItems().map(toPublic);
-  sendJson(res, 200, { items });
+  const verified = checkVerify(req);
+  const items = readItems().map((it) => {
+    const pub = toPublic(it);
+    if (!verified) pub.contact = null;
+    return pub;
+  });
+  sendJson(res, 200, { items, verified });
 }
 
 async function handleCreateItem(req, res) {
-  let payload;
-  try {
-    payload = await readJson(req);
-  } catch (e) {
-    return sendJson(res, 400, { error: '请求格式错误' });
+  const s = readSettings();
+  const needsVerify = !!(s.question && s.answer);
+  if (needsVerify && !checkVerify(req)) {
+    return sendJson(res, 401, { error: '请先完成访问验证', needVerify: true });
   }
+
+  let payload;
+  try { payload = await readJson(req); }
+  catch (e) { return sendJson(res, 400, { error: '请求格式错误' }); }
 
   const campus      = String(payload.campus      || '').trim();
   const name        = String(payload.name        || '').trim();
@@ -151,9 +208,7 @@ async function handleCreateItem(req, res) {
     price = null;
   } else {
     const n = Number(price);
-    if (!isFinite(n) || n < 0) {
-      return sendJson(res, 400, { error: '价格不合法' });
-    }
+    if (!isFinite(n) || n < 0) return sendJson(res, 400, { error: '价格不合法' });
     price = Math.round(n * 100) / 100;
   }
 
@@ -176,39 +231,30 @@ async function handleCreateItem(req, res) {
 
   const item = {
     id, ownerKey, campus, name, description, contact, price,
-    image: imageFile,
-    status: 'active',
-    createdAt: Date.now()
+    image: imageFile, status: 'active', createdAt: Date.now()
   };
 
   const items = readItems();
   items.unshift(item);
   writeItems(items);
-
   sendJson(res, 201, { item: toPublic(item), ownerKey });
 }
 
 async function handleUpdateItem(req, res, id) {
   let payload;
-  try {
-    payload = await readJson(req);
-  } catch (e) {
-    return sendJson(res, 400, { error: '请求格式错误' });
-  }
+  try { payload = await readJson(req); }
+  catch (e) { return sendJson(res, 400, { error: '请求格式错误' }); }
 
   const items = readItems();
   const idx = items.findIndex((i) => i.id === id);
   if (idx === -1) return sendJson(res, 404, { error: '物品不存在' });
-
   if (items[idx].ownerKey !== payload.ownerKey) {
     return sendJson(res, 403, { error: '没有权限修改该物品' });
   }
-
   const status = payload.status;
   if (status !== 'active' && status !== 'sold') {
     return sendJson(res, 400, { error: '状态不合法' });
   }
-
   items[idx].status = status;
   writeItems(items);
   sendJson(res, 200, { item: toPublic(items[idx]) });
@@ -216,26 +262,18 @@ async function handleUpdateItem(req, res, id) {
 
 async function handleDeleteItem(req, res, id) {
   let payload;
-  try {
-    payload = await readJson(req);
-  } catch (e) {
-    return sendJson(res, 400, { error: '请求格式错误' });
-  }
+  try { payload = await readJson(req); }
+  catch (e) { return sendJson(res, 400, { error: '请求格式错误' }); }
 
   const items = readItems();
   const idx = items.findIndex((i) => i.id === id);
   if (idx === -1) return sendJson(res, 404, { error: '物品不存在' });
-
   if (items[idx].ownerKey !== payload.ownerKey) {
     return sendJson(res, 403, { error: '没有权限删除该物品' });
   }
-
   const [removed] = items.splice(idx, 1);
   writeItems(items);
-
-  if (removed.image) {
-    fs.unlink(path.join(IMAGES_DIR, removed.image), () => {});
-  }
+  if (removed.image) fs.unlink(path.join(IMAGES_DIR, removed.image), () => {});
   sendJson(res, 200, { ok: true });
 }
 
@@ -243,64 +281,79 @@ async function handleDeleteItem(req, res, id) {
 
 async function handleAdminLogin(req, res) {
   let payload;
-  try {
-    payload = await readJson(req);
-  } catch (e) {
-    return sendJson(res, 400, { error: '请求格式错误' });
-  }
+  try { payload = await readJson(req); }
+  catch (e) { return sendJson(res, 400, { error: '请求格式错误' }); }
 
   const pwd = String(payload.password || '');
   if (pwd !== ADMIN_PASSWORD) {
     await new Promise((r) => setTimeout(r, 400));
     return sendJson(res, 401, { error: '密码错误' });
   }
-
-  const token = createAdminToken();
-  console.log('[管理] 管理员登录成功');
-  sendJson(res, 200, { token, expiresIn: ADMIN_TOKEN_TTL });
+  sendJson(res, 200, { token: createAdminToken(), expiresIn: ADMIN_TOKEN_TTL });
 }
 
 function handleAdminList(req, res) {
   if (!checkAdmin(req)) return sendJson(res, 401, { error: '未登录或登录已过期' });
-  const items = readItems().map(toPublic);
-  sendJson(res, 200, { items });
+  sendJson(res, 200, { items: readItems().map(toPublic) });
 }
 
 async function handleAdminDelete(req, res, id) {
   if (!checkAdmin(req)) return sendJson(res, 401, { error: '未登录或登录已过期' });
-
   const items = readItems();
   const idx = items.findIndex((i) => i.id === id);
   if (idx === -1) return sendJson(res, 404, { error: '物品不存在' });
-
   const [removed] = items.splice(idx, 1);
   writeItems(items);
-
-  if (removed.image) {
-    fs.unlink(path.join(IMAGES_DIR, removed.image), () => {});
-  }
-  console.log('[管理] 删除物品：', removed.name);
+  if (removed.image) fs.unlink(path.join(IMAGES_DIR, removed.image), () => {});
   sendJson(res, 200, { ok: true });
 }
 
 async function handleAdminCleanSold(req, res) {
   if (!checkAdmin(req)) return sendJson(res, 401, { error: '未登录或登录已过期' });
-
   const items = readItems();
   const kept = [];
   let removedCount = 0;
-
   for (const it of items) {
     if (it.status === 'sold') {
       removedCount++;
       if (it.image) fs.unlink(path.join(IMAGES_DIR, it.image), () => {});
-    } else {
-      kept.push(it);
-    }
+    } else kept.push(it);
   }
   writeItems(kept);
-  console.log('[管理] 清理已下架物品：', removedCount, '件');
   sendJson(res, 200, { ok: true, removed: removedCount });
+}
+
+/* ---- 管理员：验证问题设置 ---- */
+
+function handleAdminGetSettings(req, res) {
+  if (!checkAdmin(req)) return sendJson(res, 401, { error: '未登录或登录已过期' });
+  const s = readSettings();
+  sendJson(res, 200, { question: s.question, answer: s.answer });
+}
+
+async function handleAdminSaveSettings(req, res) {
+  if (!checkAdmin(req)) return sendJson(res, 401, { error: '未登录或登录已过期' });
+
+  let payload;
+  try { payload = await readJson(req); }
+  catch (e) { return sendJson(res, 400, { error: '请求格式错误' }); }
+
+  const question = String(payload.question || '').trim();
+  const answer   = String(payload.answer   || '').trim();
+
+  if (question.length > 200) return sendJson(res, 400, { error: '问题最多 200 字' });
+  if (answer.length > 200)   return sendJson(res, 400, { error: '答案最多 200 字' });
+  if ((question && !answer) || (!question && answer)) {
+    return sendJson(res, 400, { error: '问题与答案必须同时填写，或同时清空' });
+  }
+
+  const old = readSettings();
+  const changed = old.question !== question || old.answer !== answer;
+  writeSettings({ question, answer });
+
+  if (changed) clearVerifyTokens();
+
+  sendJson(res, 200, { ok: true, question, answer });
 }
 
 /* ---------------- 图片输出 ---------------- */
@@ -327,22 +380,16 @@ const MIME = {
   '.svg' : 'image/svg+xml',
   '.ico' : 'image/x-icon'
 };
-
 function serveStatic(req, res, urlPath) {
   let rel = decodeURIComponent(urlPath);
   if (rel === '/') rel = '/index.html';
   if (rel === '/admin' || rel === '/admin/') rel = '/admin.html';
-
   const file = path.join(PUBLIC_DIR, rel);
-  if (!file.startsWith(PUBLIC_DIR)) {
-    res.writeHead(403); res.end('Forbidden'); return;
-  }
-
+  if (!file.startsWith(PUBLIC_DIR)) { res.writeHead(403); res.end('Forbidden'); return; }
   fs.stat(file, (err, stat) => {
     if (err || !stat.isFile()) {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('404 Not Found');
-      return;
+      res.end('404 Not Found'); return;
     }
     res.writeHead(200, {
       'Content-Type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream'
@@ -358,6 +405,11 @@ const server = http.createServer(async (req, res) => {
   const method   = (req.method || 'GET').toUpperCase();
 
   try {
+    if (pathname === '/api/verify/question' && method === 'GET')
+      return handleGetVerifyQuestion(req, res);
+    if (pathname === '/api/verify/answer' && method === 'POST')
+      return await handleVerifyAnswer(req, res);
+
     if (pathname === '/api/items' && method === 'GET')  return handleListItems(req, res);
     if (pathname === '/api/items' && method === 'POST') return await handleCreateItem(req, res);
 
@@ -367,12 +419,14 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === '/api/admin/login' && method === 'POST')
       return await handleAdminLogin(req, res);
-
     if (pathname === '/api/admin/items' && method === 'GET')
       return handleAdminList(req, res);
-
     if (pathname === '/api/admin/clean-sold' && method === 'POST')
       return await handleAdminCleanSold(req, res);
+    if (pathname === '/api/admin/settings' && method === 'GET')
+      return handleAdminGetSettings(req, res);
+    if (pathname === '/api/admin/settings' && method === 'POST')
+      return await handleAdminSaveSettings(req, res);
 
     const mAdminItem = /^\/api\/admin\/items\/([A-Za-z0-9_]+)$/.exec(pathname);
     if (mAdminItem && method === 'DELETE')
@@ -381,13 +435,9 @@ const server = http.createServer(async (req, res) => {
     const mImg = /^\/api\/images\/([^/]+)$/.exec(pathname);
     if (mImg && method === 'GET') return handleImage(req, res, mImg[1]);
 
-    if (pathname.startsWith('/api/')) {
-      return sendJson(res, 404, { error: '接口不存在' });
-    }
+    if (pathname.startsWith('/api/')) return sendJson(res, 404, { error: '接口不存在' });
 
-    if (method === 'GET' || method === 'HEAD') {
-      return serveStatic(req, res, pathname);
-    }
+    if (method === 'GET' || method === 'HEAD') return serveStatic(req, res, pathname);
 
     res.writeHead(405); res.end('Method Not Allowed');
   } catch (err) {
@@ -402,12 +452,11 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log('  后台管理：  http://localhost:' + PORT + '/admin.html');
   console.log('  管理密码：  ' + ADMIN_PASSWORD +
     (ADMIN_PASSWORD === 'admin123' ? '   ⚠️ 请在代码或环境变量中修改！' : ''));
-
   const nets = os.networkInterfaces();
   for (const name of Object.keys(nets)) {
     for (const net of nets[name] || []) {
       if (net.family === 'IPv4' && !net.internal) {
-        console.log('  局域网访问：http://' + net.address + ':' + PORT + '  （手机连同一 WiFi 可打开）');
+        console.log('  局域网访问：http://' + net.address + ':' + PORT);
       }
     }
   }
