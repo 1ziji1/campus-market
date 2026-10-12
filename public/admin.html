@@ -21,10 +21,8 @@
   }
   .wrap{max-width:1240px;margin:0 auto;padding:0 16px;}
 
-  .site-header{
-    background:#fff;border-bottom:1px solid var(--border);
-    position:sticky;top:0;z-index:20;
-  }
+  .site-header{background:#fff;border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:20;}
   .header-inner{display:flex;align-items:center;justify-content:space-between;
     gap:16px;padding:12px 0;}
   .brand{display:flex;align-items:center;gap:12px;min-width:0;}
@@ -35,11 +33,9 @@
   .brand p{margin:0;font-size:12px;color:var(--muted);}
   .header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 
-  .btn{
-    border:1px solid transparent;background:#eef1f6;color:var(--text);
+  .btn{border:1px solid transparent;background:#eef1f6;color:var(--text);
     border-radius:10px;padding:8px 15px;font-size:13.5px;cursor:pointer;
-    font-family:inherit;transition:.18s;white-space:nowrap;
-  }
+    font-family:inherit;transition:.18s;white-space:nowrap;}
   .btn:hover{filter:brightness(.97);}
   .btn:active{transform:scale(.98);}
   .btn-primary{background:var(--primary);color:#fff;}
@@ -54,91 +50,73 @@
   main.wrap{padding-top:20px;padding-bottom:60px;}
 
   #loginView{display:flex;align-items:center;justify-content:center;min-height:78vh;padding:20px 0;}
-  .login-card{
-    background:#fff;border:1px solid var(--border);border-radius:18px;
+  .login-card{background:#fff;border:1px solid var(--border);border-radius:18px;
     box-shadow:0 12px 34px rgba(31,39,51,.08);
-    padding:34px 30px;width:100%;max-width:380px;text-align:center;
-  }
+    padding:34px 30px;width:100%;max-width:380px;text-align:center;}
   .login-icon{font-size:40px;margin-bottom:10px;}
   .login-card h2{margin:0 0 6px;font-size:19px;}
   .login-card p{margin:0 0 22px;font-size:13px;color:var(--muted);}
-  .login-card input{
-    width:100%;font-family:inherit;font-size:14.5px;color:var(--text);
+  .login-card input{width:100%;font-family:inherit;font-size:14.5px;color:var(--text);
     border:1px solid var(--border);border-radius:10px;padding:11px 13px;
-    background:#fafbfd;outline:none;transition:.18s;margin-bottom:12px;
-  }
-  .login-card input:focus{
-    border-color:var(--primary);background:#fff;
-    box-shadow:0 0 0 3px rgba(47,109,246,.12);
-  }
+    background:#fafbfd;outline:none;transition:.18s;margin-bottom:12px;}
+  .login-card input:focus{border-color:var(--primary);background:#fff;
+    box-shadow:0 0 0 3px rgba(47,109,246,.12);}
   .login-card .btn{width:100%;padding:11px;font-size:14.5px;}
   .login-err{color:var(--danger);font-size:13px;min-height:18px;margin-top:10px;}
 
-  .stat-grid{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-    gap:12px;margin-bottom:16px;
-  }
-  .stat{
-    background:#fff;border:1px solid var(--border);border-radius:var(--radius);
-    padding:14px 16px;box-shadow:var(--shadow);
-  }
+  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+  .tab-btn{border:none;background:transparent;color:var(--muted);cursor:pointer;
+    padding:11px 18px;font-size:14px;font-family:inherit;font-weight:500;
+    border-bottom:2px solid transparent;transition:.15s;}
+  .tab-btn:hover{color:var(--text);}
+  .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+  .tab-panel[hidden]{display:none;}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:12px;margin-bottom:16px;}
+  .stat{background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+    padding:14px 16px;box-shadow:var(--shadow);}
   .stat .num{font-size:24px;font-weight:700;line-height:1.2;}
   .stat .lbl{font-size:12.5px;color:var(--muted);margin-top:2px;}
   .stat.warn .num{color:var(--danger);}
   .stat.ok   .num{color:var(--ok);}
 
-  .toolbar{
-    display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;
     background:#fff;border:1px solid var(--border);border-radius:var(--radius);
-    padding:12px;margin-bottom:14px;box-shadow:var(--shadow);
-  }
+    padding:12px;margin-bottom:14px;box-shadow:var(--shadow);}
   .toolbar input[type="search"],.toolbar select{
     font-family:inherit;font-size:13.5px;color:var(--text);
     border:1px solid var(--border);border-radius:10px;
-    padding:8px 11px;background:#fafbfd;outline:none;transition:.18s;
-  }
+    padding:8px 11px;background:#fafbfd;outline:none;transition:.18s;}
   .toolbar input[type="search"]{flex:1 1 220px;min-width:0;}
   .toolbar input[type="search"]:focus,.toolbar select:focus{
     border-color:var(--primary);background:#fff;
-    box-shadow:0 0 0 3px rgba(47,109,246,.12);
-  }
+    box-shadow:0 0 0 3px rgba(47,109,246,.12);}
   .toolbar select{cursor:pointer;}
   .spacer{flex:1;}
 
-  .table-box{
-    background:#fff;border:1px solid var(--border);border-radius:var(--radius);
-    box-shadow:var(--shadow);overflow:hidden;
-  }
+  .table-box{background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;}
   .table-scroll{overflow-x:auto;}
   table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:860px;}
-  thead th{
-    text-align:left;padding:12px 14px;background:#f8fafc;
+  thead th{text-align:left;padding:12px 14px;background:#f8fafc;
     font-size:12.5px;font-weight:600;color:var(--muted);
-    border-bottom:1px solid var(--border);white-space:nowrap;
-  }
-  tbody td{
-    padding:12px 14px;border-bottom:1px solid #f0f3f7;vertical-align:top;
-  }
+    border-bottom:1px solid var(--border);white-space:nowrap;}
+  tbody td{padding:12px 14px;border-bottom:1px solid #f0f3f7;vertical-align:top;}
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover{background:#fafbfd;}
 
-  .cell-img{
-    width:52px;height:52px;border-radius:9px;object-fit:cover;
-    background:#eef1f6;display:block;border:1px solid var(--border);
-  }
+  .cell-img{width:52px;height:52px;border-radius:9px;object-fit:cover;
+    background:#eef1f6;display:block;border:1px solid var(--border);}
   .cell-img.ph{display:grid;place-items:center;color:#b6bfca;font-size:16px;}
 
   .item-name{font-weight:600;margin-bottom:2px;word-break:break-word;}
-  .item-desc{
-    font-size:12.5px;color:var(--muted);max-width:260px;
+  .item-desc{font-size:12.5px;color:var(--muted);max-width:260px;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-    overflow:hidden;word-break:break-word;
-  }
+    overflow:hidden;word-break:break-word;}
 
-  .badge{
-    display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;
-    white-space:nowrap;
-  }
+  .badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;
+    white-space:nowrap;}
   .badge.active{background:#e7f6ee;color:var(--ok);}
   .badge.sold{background:#f0f2f5;color:var(--muted);}
 
@@ -146,39 +124,47 @@
 
   .contact-cell{max-width:180px;}
   .contact-line{display:flex;align-items:center;gap:6px;}
-  .contact-text{
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-    max-width:130px;font-size:13px;
-  }
-  .mini-btn{
-    border:none;background:#e8eeff;color:var(--primary);border-radius:6px;
-    padding:2px 7px;font-size:11.5px;cursor:pointer;font-family:inherit;flex:none;
-  }
+  .contact-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:130px;font-size:13px;}
+  .mini-btn{border:none;background:#e8eeff;color:var(--primary);border-radius:6px;
+    padding:2px 7px;font-size:11.5px;cursor:pointer;font-family:inherit;flex:none;}
   .mini-btn:hover{background:#dbe6ff;}
 
   .time-cell{font-size:12.5px;color:var(--muted);white-space:nowrap;}
-
   .empty-row{text-align:center;padding:56px 20px;color:var(--muted);}
 
-  .footer-bar{
-    display:flex;justify-content:space-between;align-items:center;
+  .footer-bar{display:flex;justify-content:space-between;align-items:center;
     gap:12px;flex-wrap:wrap;padding:12px 14px;
     border-top:1px solid var(--border);background:#fafbfd;
-    font-size:13px;color:var(--muted);
-  }
+    font-size:13px;color:var(--muted);}
 
-  #toast{
-    position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
+  .settings-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 24px;max-width:640px;}
+  .settings-card h2{margin:0 0 6px;font-size:16px;}
+  .settings-card .desc{margin:0 0 18px;font-size:13px;color:var(--muted);}
+  .settings-card label{display:block;font-size:13.5px;font-weight:600;
+    color:#3c4757;margin:14px 0 6px;}
+  .settings-card input[type="text"]{width:100%;font-family:inherit;font-size:14px;
+    color:var(--text);border:1px solid var(--border);border-radius:10px;
+    padding:10px 12px;background:#fafbfd;outline:none;transition:.18s;}
+  .settings-card input[type="text"]:focus{border-color:var(--primary);background:#fff;
+    box-shadow:0 0 0 3px rgba(47,109,246,.12);}
+  .settings-card .hint{margin-top:8px;font-size:12.5px;color:var(--muted);line-height:1.6;}
+  .settings-card .actions{display:flex;gap:10px;margin-top:22px;align-items:center;}
+  .settings-status{font-size:13px;color:var(--ok);}
+  .settings-warn{background:#fff8e6;border:1px solid #ffe4a3;color:#8a6200;
+    border-radius:10px;padding:10px 12px;font-size:12.5px;margin-top:14px;line-height:1.6;}
+
+  #toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
     background:rgba(17,24,39,.93);color:#fff;padding:10px 20px;border-radius:999px;
     font-size:13.5px;opacity:0;pointer-events:none;transition:.26s;z-index:100;
-    box-shadow:0 8px 24px rgba(15,22,34,.3);
-  }
+    box-shadow:0 8px 24px rgba(15,22,34,.3);}
   #toast.show{opacity:1;transform:translate(-50%,0);}
 
   @media (max-width:600px){
     .brand p{display:none;}
-    .header-actions .btn span.long{display:none;}
     .stat .num{font-size:20px;}
+    .tab-btn{padding:10px 12px;font-size:13px;}
   }
 </style>
 </head>
@@ -217,70 +203,98 @@
   </section>
 
   <section id="adminView" hidden>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="items" type="button">物品管理</button>
+      <button class="tab-btn" data-tab="settings" type="button">访问验证设置</button>
+    </div>
 
-    <div class="stat-grid">
-      <div class="stat">
-        <div class="num" id="statTotal">–</div>
-        <div class="lbl">物品总数</div>
+    <div class="tab-panel" data-panel="items">
+      <div class="stat-grid">
+        <div class="stat"><div class="num" id="statTotal">–</div><div class="lbl">物品总数</div></div>
+        <div class="stat ok"><div class="num" id="statActive">–</div><div class="lbl">展示中</div></div>
+        <div class="stat warn"><div class="num" id="statSold">–</div><div class="lbl">已下架</div></div>
+        <div class="stat"><div class="num" id="statToday">–</div><div class="lbl">今日新增</div></div>
       </div>
-      <div class="stat ok">
-        <div class="num" id="statActive">–</div>
-        <div class="lbl">展示中</div>
+
+      <div class="toolbar">
+        <input id="searchInput" type="search" placeholder="🔍 搜索名称 / 描述 / 联系方式…">
+        <select id="statusFilter">
+          <option value="">全部状态</option>
+          <option value="active">展示中</option>
+          <option value="sold">已下架</option>
+        </select>
+        <select id="campusFilter">
+          <option value="">全部校区</option>
+        </select>
+        <select id="sortSelect">
+          <option value="new">最新发布</option>
+          <option value="old">最早发布</option>
+          <option value="priceAsc">价格从低到高</option>
+          <option value="priceDesc">价格从高到低</option>
+        </select>
+        <div class="spacer"></div>
+        <button class="btn btn-ghost" id="refreshBtn" type="button">刷新</button>
+        <button class="btn btn-danger" id="cleanSoldBtn" type="button">清理已下架</button>
       </div>
-      <div class="stat warn">
-        <div class="num" id="statSold">–</div>
-        <div class="lbl">已下架</div>
-      </div>
-      <div class="stat">
-        <div class="num" id="statToday">–</div>
-        <div class="lbl">今日新增</div>
+
+      <div class="table-box">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:70px;">图片</th>
+                <th>物品</th>
+                <th style="width:90px;">校区</th>
+                <th style="width:90px;">价格</th>
+                <th style="width:180px;">联系方式</th>
+                <th style="width:90px;">状态</th>
+                <th style="width:150px;">发布时间</th>
+                <th style="width:90px;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div class="footer-bar">
+          <span id="footerInfo">–</span>
+          <span id="lastUpdate">–</span>
+        </div>
       </div>
     </div>
 
-    <div class="toolbar">
-      <input id="searchInput" type="search" placeholder="🔍 搜索名称 / 描述 / 联系方式…">
-      <select id="statusFilter">
-        <option value="">全部状态</option>
-        <option value="active">展示中</option>
-        <option value="sold">已下架</option>
-      </select>
-      <select id="campusFilter">
-        <option value="">全部校区</option>
-      </select>
-      <select id="sortSelect">
-        <option value="new">最新发布</option>
-        <option value="old">最早发布</option>
-        <option value="priceAsc">价格从低到高</option>
-        <option value="priceDesc">价格从高到低</option>
-      </select>
-      <div class="spacer"></div>
-      <button class="btn btn-ghost" id="refreshBtn" type="button">刷新</button>
-      <button class="btn btn-danger" id="cleanSoldBtn" type="button">清理已下架</button>
+    <div class="tab-panel" data-panel="settings" hidden>
+      <div class="settings-card">
+        <h2>访客验证设置</h2>
+        <p class="desc">
+          设置一个问题和标准答案。访客需答对才能<strong>发布物品</strong>和<strong>查看联系方式</strong>。
+          <br>留空 = 关闭验证，所有人都可以直接使用全部功能。
+        </p>
+
+        <label for="setQuestion">问题</label>
+        <input id="setQuestion" type="text" maxlength="200"
+               placeholder="例如：我们学校的校训是什么？">
+
+        <label for="setAnswer">标准答案</label>
+        <input id="setAnswer" type="text" maxlength="200"
+               placeholder="例如：自强不息 知行合一">
+
+        <p class="hint">
+          · 答案<strong>不区分大小写</strong>，但空格和标点要完全一致。<br>
+          · 例如答案填 <code>自强不息 知行合一</code>，访客输入 <code>自强不息 知行合一</code> 才能通过。
+        </p>
+
+        <div class="settings-warn">
+          ⚠️ 保存后，<strong>所有已通过验证的访客都会失效</strong>，需要重新回答问题。请谨慎修改。
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="saveSettingsBtn" type="button">保存设置</button>
+          <button class="btn btn-ghost" id="clearSettingsBtn" type="button">清空并关闭验证</button>
+          <span class="settings-status" id="settingsStatus"></span>
+        </div>
+      </div>
     </div>
 
-    <div class="table-box">
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:70px;">图片</th>
-              <th>物品</th>
-              <th style="width:90px;">校区</th>
-              <th style="width:90px;">价格</th>
-              <th style="width:180px;">联系方式</th>
-              <th style="width:90px;">状态</th>
-              <th style="width:150px;">发布时间</th>
-              <th style="width:90px;">操作</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-      <div class="footer-bar">
-        <span id="footerInfo">–</span>
-        <span id="lastUpdate">–</span>
-      </div>
-    </div>
   </section>
 
 </main>
@@ -316,6 +330,12 @@
   const statSold   = $('#statSold');
   const statToday  = $('#statToday');
 
+  const setQuestion = $('#setQuestion');
+  const setAnswer   = $('#setAnswer');
+  const saveSettingsBtn  = $('#saveSettingsBtn');
+  const clearSettingsBtn = $('#clearSettingsBtn');
+  const settingsStatus   = $('#settingsStatus');
+
   let items = [];
 
   function escapeHtml(str) {
@@ -323,45 +343,33 @@
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[c]));
   }
-
   function priceValue(p) {
     if (p === '' || p === null || p === undefined) return Infinity;
-    const n = Number(p);
-    return isNaN(n) ? Infinity : n;
+    const n = Number(p); return isNaN(n) ? Infinity : n;
   }
-
   function formatPrice(p) {
     const v = priceValue(p);
     if (v === Infinity) return '面议';
     return '¥' + (Number.isInteger(v) ? v.toLocaleString('zh-CN') : v.toFixed(2));
   }
-
   function formatTime(ts) {
     const d = new Date(ts);
     const pad = (n) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
            `${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
-
   let toastTimer = null;
   function toast(msg) {
     let el = document.getElementById('toast');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'toast';
-      document.body.appendChild(el);
-    }
+    if (!el) { el = document.createElement('div'); el.id = 'toast'; document.body.appendChild(el); }
     el.textContent = msg;
     el.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove('show'), 1900);
   }
-
   async function copyText(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast('已复制');
-    } catch (e) {
+    try { await navigator.clipboard.writeText(text); toast('已复制'); }
+    catch (e) {
       const ta = document.createElement('textarea');
       ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
       document.body.appendChild(ta); ta.select();
@@ -382,15 +390,11 @@
     const token = getToken();
     if (token) headers['Authorization'] = 'Bearer ' + token;
     if (options.body) headers['Content-Type'] = 'application/json';
-
     const res = await fetch(path, Object.assign({}, options, { headers, cache: 'no-store' }));
-
     if (res.status === 401) {
-      setToken('');
-      showLogin();
+      setToken(''); showLogin();
       throw new Error('登录已过期，请重新登录');
     }
-
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || ('请求失败 ' + res.status));
     return data;
@@ -404,26 +408,33 @@
     passwordInput.value = '';
     setTimeout(() => passwordInput.focus(), 50);
   }
-
   function showAdmin() {
     loginView.hidden = true;
     adminView.hidden = false;
     logoutBtn.hidden = false;
   }
 
+  document.querySelectorAll('.tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach((b) =>
+        b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.tab-panel').forEach((p) =>
+        p.hidden = p.dataset.panel !== tab);
+      if (tab === 'settings') loadSettings();
+    });
+  });
+
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const pwd = passwordInput.value;
     if (!pwd) return;
-
     loginBtn.disabled = true;
     loginBtn.textContent = '登录中…';
     loginErr.textContent = '';
-
     try {
       const data = await api('/api/admin/login', {
-        method: 'POST',
-        body: JSON.stringify({ password: pwd })
+        method: 'POST', body: JSON.stringify({ password: pwd })
       });
       setToken(data.token);
       showAdmin();
@@ -439,10 +450,7 @@
   });
 
   logoutBtn.addEventListener('click', () => {
-    setToken('');
-    items = [];
-    showLogin();
-    toast('已退出登录');
+    setToken(''); items = []; showLogin(); toast('已退出登录');
   });
 
   async function loadItems() {
@@ -460,7 +468,6 @@
   function refreshCampusOptions() {
     const set = new Set();
     items.forEach((it) => { if (it.campus) set.add(it.campus); });
-
     const cur = campusFilter.value;
     campusFilter.innerHTML = '<option value="">全部校区</option>' +
       [...set].sort().map((c) =>
@@ -469,10 +476,8 @@
   }
 
   function render() {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
     const ts = todayStart.getTime();
-
     statTotal.textContent  = items.length;
     statActive.textContent = items.filter((i) => i.status !== 'sold').length;
     statSold.textContent   = items.filter((i) => i.status === 'sold').length;
@@ -493,12 +498,10 @@
       }
       return true;
     });
-
     list.sort((a, b) => {
       if (sort === 'old') return a.createdAt - b.createdAt;
       if (sort === 'priceAsc' || sort === 'priceDesc') {
-        const av = priceValue(a.price);
-        const bv = priceValue(b.price);
+        const av = priceValue(a.price), bv = priceValue(b.price);
         if (av === bv) return b.createdAt - a.createdAt;
         if (av === Infinity) return 1;
         if (bv === Infinity) return -1;
@@ -510,23 +513,18 @@
     if (list.length === 0) {
       tableBody.innerHTML =
         `<tr><td colspan="8" class="empty-row">` +
-        (items.length ? '没有符合条件的物品' : '暂无物品数据') +
-        `</td></tr>`;
+        (items.length ? '没有符合条件的物品' : '暂无物品数据') + `</td></tr>`;
     } else {
       tableBody.innerHTML = list.map((it) => {
         const sold = it.status === 'sold';
         return `
           <tr data-id="${it.id}">
-            <td>
-              ${it.image
-                ? `<img class="cell-img" src="${it.image}" alt="" loading="lazy">`
-                : `<div class="cell-img ph">无图</div>`}
-            </td>
+            <td>${it.image
+              ? `<img class="cell-img" src="${it.image}" alt="" loading="lazy">`
+              : `<div class="cell-img ph">无图</div>`}</td>
             <td>
               <div class="item-name">${escapeHtml(it.name)}</div>
-              ${it.description
-                ? `<div class="item-desc">${escapeHtml(it.description)}</div>`
-                : ``}
+              ${it.description ? `<div class="item-desc">${escapeHtml(it.description)}</div>` : ``}
             </td>
             <td>${escapeHtml(it.campus)}</td>
             <td class="price-cell">${formatPrice(it.price)}</td>
@@ -539,19 +537,13 @@
                         data-copy="${escapeHtml(it.contact)}">复制</button>
               </div>
             </td>
-            <td>
-              <span class="badge ${sold ? 'sold' : 'active'}">
-                ${sold ? '已下架' : '展示中'}
-              </span>
-            </td>
+            <td><span class="badge ${sold ? 'sold' : 'active'}">
+              ${sold ? '已下架' : '展示中'}</span></td>
             <td class="time-cell">${formatTime(it.createdAt)}</td>
-            <td>
-              <button class="btn btn-danger btn-sm" type="button" data-delete>删除</button>
-            </td>
+            <td><button class="btn btn-danger btn-sm" type="button" data-delete>删除</button></td>
           </tr>`;
       }).join('');
     }
-
     footerInfo.textContent = `共 ${items.length} 件物品，当前显示 ${list.length} 件`;
     lastUpdate.textContent = '最后刷新：' + formatTime(Date.now());
   }
@@ -562,17 +554,12 @@
 
     const delBtn = e.target.closest('[data-delete]');
     if (!delBtn) return;
-
     const tr = delBtn.closest('tr');
     const id = tr.dataset.id;
     const item = items.find((i) => i.id === id);
     if (!item) return;
-
     if (!confirm(`确定要删除「${item.name}」吗？\n此操作不可恢复，图片也会一并删除。`)) return;
-
-    delBtn.disabled = true;
-    delBtn.textContent = '删除中';
-
+    delBtn.disabled = true; delBtn.textContent = '删除中';
     try {
       await api('/api/admin/items/' + encodeURIComponent(id), { method: 'DELETE' });
       items = items.filter((i) => i.id !== id);
@@ -581,20 +568,16 @@
       toast('已删除');
     } catch (err) {
       toast(err.message || '删除失败');
-      delBtn.disabled = false;
-      delBtn.textContent = '删除';
+      delBtn.disabled = false; delBtn.textContent = '删除';
     }
   });
 
   cleanSoldBtn.addEventListener('click', async () => {
     const soldCount = items.filter((i) => i.status === 'sold').length;
     if (soldCount === 0) { toast('当前没有已下架的物品'); return; }
-
     if (!confirm(`确定要清理全部 ${soldCount} 件已下架物品吗？\n此操作不可恢复。`)) return;
-
     cleanSoldBtn.disabled = true;
     cleanSoldBtn.textContent = '清理中…';
-
     try {
       const data = await api('/api/admin/clean-sold', { method: 'POST' });
       toast(`已清理 ${data.removed} 件物品`);
@@ -604,6 +587,61 @@
     } finally {
       cleanSoldBtn.disabled = false;
       cleanSoldBtn.textContent = '清理已下架';
+    }
+  });
+
+  async function loadSettings() {
+    try {
+      const data = await api('/api/admin/settings');
+      setQuestion.value = data.question || '';
+      setAnswer.value = data.answer || '';
+      settingsStatus.textContent = '';
+    } catch (err) {
+      toast(err.message || '加载设置失败');
+    }
+  }
+
+  saveSettingsBtn.addEventListener('click', async () => {
+    const q = setQuestion.value.trim();
+    const a = setAnswer.value.trim();
+    if ((q && !a) || (!q && a)) {
+      toast('问题和答案必须同时填写，或同时清空');
+      return;
+    }
+    saveSettingsBtn.disabled = true;
+    saveSettingsBtn.textContent = '保存中…';
+    settingsStatus.textContent = '';
+    try {
+      await api('/api/admin/settings', {
+        method: 'POST',
+        body: JSON.stringify({ question: q, answer: a })
+      });
+      settingsStatus.textContent = '✅ 已保存';
+      toast('设置已保存，所有访客需重新验证');
+    } catch (err) {
+      toast(err.message || '保存失败');
+    } finally {
+      saveSettingsBtn.disabled = false;
+      saveSettingsBtn.textContent = '保存设置';
+      setTimeout(() => { settingsStatus.textContent = ''; }, 3000);
+    }
+  });
+
+  clearSettingsBtn.addEventListener('click', async () => {
+    if (!confirm('确定要清空问题和答案并关闭验证吗？\n所有访客将无需验证即可使用。')) return;
+    clearSettingsBtn.disabled = true;
+    try {
+      await api('/api/admin/settings', {
+        method: 'POST',
+        body: JSON.stringify({ question: '', answer: '' })
+      });
+      setQuestion.value = '';
+      setAnswer.value = '';
+      toast('已关闭验证');
+    } catch (err) {
+      toast(err.message || '操作失败');
+    } finally {
+      clearSettingsBtn.disabled = false;
     }
   });
 
@@ -622,9 +660,7 @@
       showAdmin();
       refreshCampusOptions();
       render();
-    } catch (err) {
-      showLogin();
-    }
+    } catch (err) { showLogin(); }
   })();
 
 })();
