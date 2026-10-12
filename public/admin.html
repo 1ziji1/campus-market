@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>后台管理 · 校园二手集市</title>
+<style>
+  :root{
+    --bg:#f4f6fa; --card:#fff; --primary:#2f6df6; --primary-dark:#1f56d6;
+    --text:#1f2733; --muted:#7b8794; --border:#e6e9ef;
+    --danger:#e8503a; --ok:#12a35a;
+    --radius:14px; --shadow:0 2px 10px rgba(31,39,51,.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg); color:var(--text); line-height:1.5;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",
+                "Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 16px;}
+
+  .site-header{
+    background:#fff;border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:20;
+  }
+  .header-inner{display:flex;align-items:center;justify-content:space-between;
+    gap:16px;padding:12px 0;}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0;}
+  .logo{width:40px;height:40px;flex:none;border-radius:11px;
+    background:linear-gradient(135deg,#3c4757,#1f2733);
+    display:grid;place-items:center;font-size:20px;color:#fff;}
+  .brand h1{font-size:17px;margin:0;}
+  .brand p{margin:0;font-size:12px;color:var(--muted);}
+  .header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+
+  .btn{
+    border:1px solid transparent;background:#eef1f6;color:var(--text);
+    border-radius:10px;padding:8px 15px;font-size:13.5px;cursor:pointer;
+    font-family:inherit;transition:.18s;white-space:nowrap;
+  }
+  .btn:hover{filter:brightness(.97);}
+  .btn:active{transform:scale(.98);}
+  .btn-primary{background:var(--primary);color:#fff;}
+  .btn-primary:hover{background:var(--primary-dark);}
+  .btn-ghost{background:transparent;border-color:var(--border);color:var(--muted);}
+  .btn-ghost:hover{background:#f2f4f8;color:var(--text);}
+  .btn-danger{background:#fdecea;color:var(--danger);}
+  .btn-danger:hover{background:#fbddd8;}
+  .btn-sm{padding:4px 10px;font-size:12.5px;border-radius:8px;}
+  .btn:disabled{opacity:.55;cursor:not-allowed;}
+
+  main.wrap{padding-top:20px;padding-bottom:60px;}
+
+  #loginView{display:flex;align-items:center;justify-content:center;min-height:78vh;padding:20px 0;}
+  .login-card{
+    background:#fff;border:1px solid var(--border);border-radius:18px;
+    box-shadow:0 12px 34px rgba(31,39,51,.08);
+    padding:34px 30px;width:100%;max-width:380px;text-align:center;
+  }
+  .login-icon{font-size:40px;margin-bottom:10px;}
+  .login-card h2{margin:0 0 6px;font-size:19px;}
+  .login-card p{margin:0 0 22px;font-size:13px;color:var(--muted);}
+  .login-card input{
+    width:100%;font-family:inherit;font-size:14.5px;color:var(--text);
+    border:1px solid var(--border);border-radius:10px;padding:11px 13px;
+    background:#fafbfd;outline:none;transition:.18s;margin-bottom:12px;
+  }
+  .login-card input:focus{
+    border-color:var(--primary);background:#fff;
+    box-shadow:0 0 0 3px rgba(47,109,246,.12);
+  }
+  .login-card .btn{width:100%;padding:11px;font-size:14.5px;}
+  .login-err{color:var(--danger);font-size:13px;min-height:18px;margin-top:10px;}
+
+  .stat-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:12px;margin-bottom:16px;
+  }
+  .stat{
+    background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+    padding:14px 16px;box-shadow:var(--shadow);
+  }
+  .stat .num{font-size:24px;font-weight:700;line-height:1.2;}
+  .stat .lbl{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .stat.warn .num{color:var(--danger);}
+  .stat.ok   .num{color:var(--ok);}
+
+  .toolbar{
+    display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+    background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+    padding:12px;margin-bottom:14px;box-shadow:var(--shadow);
+  }
+  .toolbar input[type="search"],.toolbar select{
+    font-family:inherit;font-size:13.5px;color:var(--text);
+    border:1px solid var(--border);border-radius:10px;
+    padding:8px 11px;background:#fafbfd;outline:none;transition:.18s;
+  }
+  .toolbar input[type="search"]{flex:1 1 220px;min-width:0;}
+  .toolbar input[type="search"]:focus,.toolbar select:focus{
+    border-color:var(--primary);background:#fff;
+    box-shadow:0 0 0 3px rgba(47,109,246,.12);
+  }
+  .toolbar select{cursor:pointer;}
+  .spacer{flex:1;}
+
+  .table-box{
+    background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;
+  }
+  .table-scroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:860px;}
+  thead th{
+    text-align:left;padding:12px 14px;background:#f8fafc;
+    font-size:12.5px;font-weight:600;color:var(--muted);
+    border-bottom:1px solid var(--border);white-space:nowrap;
+  }
+  tbody td{
+    padding:12px 14px;border-bottom:1px solid #f0f3f7;vertical-align:top;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#fafbfd;}
+
+  .cell-img{
+    width:52px;height:52px;border-radius:9px;object-fit:cover;
+    background:#eef1f6;display:block;border:1px solid var(--border);
+  }
+  .cell-img.ph{display:grid;place-items:center;color:#b6bfca;font-size:16px;}
+
+  .item-name{font-weight:600;margin-bottom:2px;word-break:break-word;}
+  .item-desc{
+    font-size:12.5px;color:var(--muted);max-width:260px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;word-break:break-word;
+  }
+
+  .badge{
+    display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;
+    white-space:nowrap;
+  }
+  .badge.active{background:#e7f6ee;color:var(--ok);}
+  .badge.sold{background:#f0f2f5;color:var(--muted);}
+
+  .price-cell{color:var(--danger);font-weight:600;white-space:nowrap;}
+
+  .contact-cell{max-width:180px;}
+  .contact-line{display:flex;align-items:center;gap:6px;}
+  .contact-text{
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    max-width:130px;font-size:13px;
+  }
+  .mini-btn{
+    border:none;background:#e8eeff;color:var(--primary);border-radius:6px;
+    padding:2px 7px;font-size:11.5px;cursor:pointer;font-family:inherit;flex:none;
+  }
+  .mini-btn:hover{background:#dbe6ff;}
+
+  .time-cell{font-size:12.5px;color:var(--muted);white-space:nowrap;}
+
+  .empty-row{text-align:center;padding:56px 20px;color:var(--muted);}
+
+  .footer-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:12px;flex-wrap:wrap;padding:12px 14px;
+    border-top:1px solid var(--border);background:#fafbfd;
+    font-size:13px;color:var(--muted);
+  }
+
+  #toast{
+    position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
+    background:rgba(17,24,39,.93);color:#fff;padding:10px 20px;border-radius:999px;
+    font-size:13.5px;opacity:0;pointer-events:none;transition:.26s;z-index:100;
+    box-shadow:0 8px 24px rgba(15,22,34,.3);
+  }
+  #toast.show{opacity:1;transform:translate(-50%,0);}
+
+  @media (max-width:600px){
+    .brand p{display:none;}
+    .header-actions .btn span.long{display:none;}
+    .stat .num{font-size:20px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="brand">
+      <div class="logo">🛡️</div>
+      <div>
+        <h1>后台管理</h1>
+        <p>校园二手集市 · 内容管理</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="/" target="_blank" rel="noopener">查看前台</a>
+      <button class="btn btn-ghost" id="logoutBtn" type="button" hidden>退出登录</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="loginView">
+    <div class="login-card">
+      <div class="login-icon">🔒</div>
+      <h2>管理员登录</h2>
+      <p>请输入管理密码以进入后台</p>
+      <form id="loginForm" autocomplete="off">
+        <input id="passwordInput" type="password" placeholder="管理密码"
+               autocomplete="current-password" required>
+        <button class="btn btn-primary" type="submit" id="loginBtn">登录</button>
+        <div class="login-err" id="loginErr"></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="adminView" hidden>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="num" id="statTotal">–</div>
+        <div class="lbl">物品总数</div>
+      </div>
+      <div class="stat ok">
+        <div class="num" id="statActive">–</div>
+        <div class="lbl">展示中</div>
+      </div>
+      <div class="stat warn">
+        <div class="num" id="statSold">–</div>
+        <div class="lbl">已下架</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="statToday">–</div>
+        <div class="lbl">今日新增</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input id="searchInput" type="search" placeholder="🔍 搜索名称 / 描述 / 联系方式…">
+      <select id="statusFilter">
+        <option value="">全部状态</option>
+        <option value="active">展示中</option>
+        <option value="sold">已下架</option>
+      </select>
+      <select id="campusFilter">
+        <option value="">全部校区</option>
+      </select>
+      <select id="sortSelect">
+        <option value="new">最新发布</option>
+        <option value="old">最早发布</option>
+        <option value="priceAsc">价格从低到高</option>
+        <option value="priceDesc">价格从高到低</option>
+      </select>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" id="refreshBtn" type="button">刷新</button>
+      <button class="btn btn-danger" id="cleanSoldBtn" type="button">清理已下架</button>
+    </div>
+
+    <div class="table-box">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:70px;">图片</th>
+              <th>物品</th>
+              <th style="width:90px;">校区</th>
+              <th style="width:90px;">价格</th>
+              <th style="width:180px;">联系方式</th>
+              <th style="width:90px;">状态</th>
+              <th style="width:150px;">发布时间</th>
+              <th style="width:90px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="footer-bar">
+        <span id="footerInfo">–</span>
+        <span id="lastUpdate">–</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  const TOKEN_KEY = 'campus_market_admin_token';
+  const $ = (s) => document.querySelector(s);
+
+  const loginView  = $('#loginView');
+  const adminView  = $('#adminView');
+  const loginForm  = $('#loginForm');
+  const passwordInput = $('#passwordInput');
+  const loginBtn   = $('#loginBtn');
+  const loginErr   = $('#loginErr');
+  const logoutBtn  = $('#logoutBtn');
+
+  const searchInput  = $('#searchInput');
+  const statusFilter = $('#statusFilter');
+  const campusFilter = $('#campusFilter');
+  const sortSelect   = $('#sortSelect');
+  const refreshBtn   = $('#refreshBtn');
+  const cleanSoldBtn = $('#cleanSoldBtn');
+
+  const tableBody  = $('#tableBody');
+  const footerInfo = $('#footerInfo');
+  const lastUpdate = $('#lastUpdate');
+
+  const statTotal  = $('#statTotal');
+  const statActive = $('#statActive');
+  const statSold   = $('#statSold');
+  const statToday  = $('#statToday');
+
+  let items = [];
+
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function priceValue(p) {
+    if (p === '' || p === null || p === undefined) return Infinity;
+    const n = Number(p);
+    return isNaN(n) ? Infinity : n;
+  }
+
+  function formatPrice(p) {
+    const v = priceValue(p);
+    if (v === Infinity) return '面议';
+    return '¥' + (Number.isInteger(v) ? v.toLocaleString('zh-CN') : v.toFixed(2));
+  }
+
+  function formatTime(ts) {
+    const d = new Date(ts);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
+           `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  let toastTimer = null;
+  function toast(msg) {
+    let el = document.getElementById('toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 1900);
+  }
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast('已复制');
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); toast('已复制'); }
+      catch (err) { toast('复制失败'); }
+      ta.remove();
+    }
+  }
+
+  function getToken() { return sessionStorage.getItem(TOKEN_KEY) || ''; }
+  function setToken(t) {
+    if (t) sessionStorage.setItem(TOKEN_KEY, t);
+    else sessionStorage.removeItem(TOKEN_KEY);
+  }
+
+  async function api(path, options = {}) {
+    const headers = Object.assign({}, options.headers || {});
+    const token = getToken();
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    if (options.body) headers['Content-Type'] = 'application/json';
+
+    const res = await fetch(path, Object.assign({}, options, { headers, cache: 'no-store' }));
+
+    if (res.status === 401) {
+      setToken('');
+      showLogin();
+      throw new Error('登录已过期，请重新登录');
+    }
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || ('请求失败 ' + res.status));
+    return data;
+  }
+
+  function showLogin() {
+    loginView.hidden = false;
+    adminView.hidden = true;
+    logoutBtn.hidden = true;
+    loginErr.textContent = '';
+    passwordInput.value = '';
+    setTimeout(() => passwordInput.focus(), 50);
+  }
+
+  function showAdmin() {
+    loginView.hidden = true;
+    adminView.hidden = false;
+    logoutBtn.hidden = false;
+  }
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pwd = passwordInput.value;
+    if (!pwd) return;
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = '登录中…';
+    loginErr.textContent = '';
+
+    try {
+      const data = await api('/api/admin/login', {
+        method: 'POST',
+        body: JSON.stringify({ password: pwd })
+      });
+      setToken(data.token);
+      showAdmin();
+      await loadItems();
+      toast('登录成功');
+    } catch (err) {
+      loginErr.textContent = err.message || '登录失败';
+      passwordInput.select();
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = '登录';
+    }
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    setToken('');
+    items = [];
+    showLogin();
+    toast('已退出登录');
+  });
+
+  async function loadItems() {
+    try {
+      const data = await api('/api/admin/items');
+      items = Array.isArray(data.items) ? data.items : [];
+      refreshCampusOptions();
+      render();
+    } catch (err) {
+      console.error(err);
+      toast(err.message || '加载失败');
+    }
+  }
+
+  function refreshCampusOptions() {
+    const set = new Set();
+    items.forEach((it) => { if (it.campus) set.add(it.campus); });
+
+    const cur = campusFilter.value;
+    campusFilter.innerHTML = '<option value="">全部校区</option>' +
+      [...set].sort().map((c) =>
+        `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    if ([...set].includes(cur)) campusFilter.value = cur;
+  }
+
+  function render() {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const ts = todayStart.getTime();
+
+    statTotal.textContent  = items.length;
+    statActive.textContent = items.filter((i) => i.status !== 'sold').length;
+    statSold.textContent   = items.filter((i) => i.status === 'sold').length;
+    statToday.textContent  = items.filter((i) => i.createdAt >= ts).length;
+
+    const kw     = searchInput.value.trim().toLowerCase();
+    const status = statusFilter.value;
+    const campus = campusFilter.value;
+    const sort   = sortSelect.value;
+
+    let list = items.filter((it) => {
+      if (status && (it.status || 'active') !== status) return false;
+      if (campus && it.campus !== campus) return false;
+      if (kw) {
+        const hay = `${it.name || ''} ${it.description || ''} ` +
+                    `${it.contact || ''} ${it.campus || ''}`.toLowerCase();
+        if (!hay.includes(kw)) return false;
+      }
+      return true;
+    });
+
+    list.sort((a, b) => {
+      if (sort === 'old') return a.createdAt - b.createdAt;
+      if (sort === 'priceAsc' || sort === 'priceDesc') {
+        const av = priceValue(a.price);
+        const bv = priceValue(b.price);
+        if (av === bv) return b.createdAt - a.createdAt;
+        if (av === Infinity) return 1;
+        if (bv === Infinity) return -1;
+        return sort === 'priceAsc' ? av - bv : bv - av;
+      }
+      return b.createdAt - a.createdAt;
+    });
+
+    if (list.length === 0) {
+      tableBody.innerHTML =
+        `<tr><td colspan="8" class="empty-row">` +
+        (items.length ? '没有符合条件的物品' : '暂无物品数据') +
+        `</td></tr>`;
+    } else {
+      tableBody.innerHTML = list.map((it) => {
+        const sold = it.status === 'sold';
+        return `
+          <tr data-id="${it.id}">
+            <td>
+              ${it.image
+                ? `<img class="cell-img" src="${it.image}" alt="" loading="lazy">`
+                : `<div class="cell-img ph">无图</div>`}
+            </td>
+            <td>
+              <div class="item-name">${escapeHtml(it.name)}</div>
+              ${it.description
+                ? `<div class="item-desc">${escapeHtml(it.description)}</div>`
+                : ``}
+            </td>
+            <td>${escapeHtml(it.campus)}</td>
+            <td class="price-cell">${formatPrice(it.price)}</td>
+            <td class="contact-cell">
+              <div class="contact-line">
+                <span class="contact-text" title="${escapeHtml(it.contact)}">
+                  ${escapeHtml(it.contact)}
+                </span>
+                <button class="mini-btn" type="button"
+                        data-copy="${escapeHtml(it.contact)}">复制</button>
+              </div>
+            </td>
+            <td>
+              <span class="badge ${sold ? 'sold' : 'active'}">
+                ${sold ? '已下架' : '展示中'}
+              </span>
+            </td>
+            <td class="time-cell">${formatTime(it.createdAt)}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" type="button" data-delete>删除</button>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    footerInfo.textContent = `共 ${items.length} 件物品，当前显示 ${list.length} 件`;
+    lastUpdate.textContent = '最后刷新：' + formatTime(Date.now());
+  }
+
+  tableBody.addEventListener('click', async (e) => {
+    const copyBtn = e.target.closest('[data-copy]');
+    if (copyBtn) { copyText(copyBtn.dataset.copy); return; }
+
+    const delBtn = e.target.closest('[data-delete]');
+    if (!delBtn) return;
+
+    const tr = delBtn.closest('tr');
+    const id = tr.dataset.id;
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    if (!confirm(`确定要删除「${item.name}」吗？\n此操作不可恢复，图片也会一并删除。`)) return;
+
+    delBtn.disabled = true;
+    delBtn.textContent = '删除中';
+
+    try {
+      await api('/api/admin/items/' + encodeURIComponent(id), { method: 'DELETE' });
+      items = items.filter((i) => i.id !== id);
+      refreshCampusOptions();
+      render();
+      toast('已删除');
+    } catch (err) {
+      toast(err.message || '删除失败');
+      delBtn.disabled = false;
+      delBtn.textContent = '删除';
+    }
+  });
+
+  cleanSoldBtn.addEventListener('click', async () => {
+    const soldCount = items.filter((i) => i.status === 'sold').length;
+    if (soldCount === 0) { toast('当前没有已下架的物品'); return; }
+
+    if (!confirm(`确定要清理全部 ${soldCount} 件已下架物品吗？\n此操作不可恢复。`)) return;
+
+    cleanSoldBtn.disabled = true;
+    cleanSoldBtn.textContent = '清理中…';
+
+    try {
+      const data = await api('/api/admin/clean-sold', { method: 'POST' });
+      toast(`已清理 ${data.removed} 件物品`);
+      await loadItems();
+    } catch (err) {
+      toast(err.message || '清理失败');
+    } finally {
+      cleanSoldBtn.disabled = false;
+      cleanSoldBtn.textContent = '清理已下架';
+    }
+  });
+
+  searchInput.addEventListener('input', render);
+  statusFilter.addEventListener('change', render);
+  campusFilter.addEventListener('change', render);
+  sortSelect.addEventListener('change', render);
+  refreshBtn.addEventListener('click', () => loadItems());
+
+  (async function init() {
+    const token = getToken();
+    if (!token) { showLogin(); return; }
+    try {
+      const data = await api('/api/admin/items');
+      items = Array.isArray(data.items) ? data.items : [];
+      showAdmin();
+      refreshCampusOptions();
+      render();
+    } catch (err) {
+      showLogin();
+    }
+  })();
+
+})();
+</script>
+</body>
+</html>

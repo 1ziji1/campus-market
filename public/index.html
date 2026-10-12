@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>校园二手集市 · 信息共享平台</title>
+<style>
+  :root{
+    --bg:#f4f6fa; --card:#fff; --primary:#2f6df6; --primary-dark:#1f56d6;
+    --text:#1f2733; --muted:#7b8794; --border:#e6e9ef;
+    --radius:16px; --shadow:0 2px 10px rgba(31,39,51,.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg); color:var(--text); line-height:1.5;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",
+                "Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 16px;}
+
+  .site-header{
+    position:sticky;top:0;z-index:30;background:rgba(255,255,255,.88);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
+  }
+  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0;}
+  .logo{width:42px;height:42px;flex:none;border-radius:12px;
+    background:linear-gradient(135deg,#5b8dff,#2f6df6);display:grid;place-items:center;font-size:22px;}
+  .brand h1{font-size:18px;margin:0;letter-spacing:.3px;}
+  .tagline{margin:0;font-size:12px;color:var(--muted);}
+
+  .btn{border:1px solid transparent;background:#eef1f6;color:var(--text);
+    border-radius:10px;padding:9px 16px;font-size:14px;cursor:pointer;
+    font-family:inherit;transition:background .18s,color .18s,transform .18s;
+    white-space:nowrap;}
+  .btn:active{transform:scale(.98);}
+  .btn-primary{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(47,109,246,.25);}
+  .btn-primary:hover{background:var(--primary-dark);}
+  .btn-primary:disabled{opacity:.6;cursor:not-allowed;}
+  .btn-ghost{background:transparent;border-color:var(--border);color:var(--muted);}
+  .btn-ghost:hover{background:#f2f4f8;color:var(--text);}
+  .btn-sm{padding:5px 10px;font-size:12.5px;border-radius:8px;}
+  .icon-btn{border:none;background:transparent;font-size:16px;color:var(--muted);
+    cursor:pointer;width:32px;height:32px;border-radius:8px;line-height:1;}
+  .icon-btn:hover{background:#f2f4f8;color:var(--text);}
+
+  main.wrap{padding-top:20px;padding-bottom:60px;}
+
+  .disclaimer{margin:0 0 16px;padding:10px 14px;font-size:13px;
+    background:#fff8e6;border:1px solid #ffe4a3;color:#8a6200;border-radius:12px;}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;background:#fff;
+    border:1px solid var(--border);border-radius:var(--radius);padding:12px;
+    margin-bottom:14px;box-shadow:var(--shadow);}
+  .toolbar input[type="search"],.toolbar select{
+    font-family:inherit;font-size:14px;color:var(--text);
+    border:1px solid var(--border);border-radius:10px;padding:9px 12px;
+    background:#fafbfd;outline:none;transition:.18s;}
+  .toolbar input[type="search"]{flex:1 1 240px;min-width:0;}
+  .toolbar input[type="search"]:focus,.toolbar select:focus{
+    border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(47,109,246,.12);}
+  .toolbar select{cursor:pointer;}
+
+  .stats{font-size:13px;color:var(--muted);margin:0 4px 12px;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);
+    transition:transform .2s,box-shadow .2s;}
+  .card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(31,39,51,.1);}
+
+  .thumb{position:relative;aspect-ratio:4/3;background:#eef1f6;overflow:hidden;}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb-placeholder{width:100%;height:100%;display:grid;place-items:center;
+    color:#aab4c0;font-size:13px;letter-spacing:1px;}
+  .card.is-sold .thumb img{filter:grayscale(.85);opacity:.65;}
+
+  .badge-sold{position:absolute;top:8px;right:8px;background:rgba(31,39,51,.84);
+    color:#fff;font-size:12px;padding:3px 9px;border-radius:999px;}
+  .badge-mine{position:absolute;top:8px;left:8px;background:rgba(47,109,246,.94);
+    color:#fff;font-size:12px;padding:3px 9px;border-radius:999px;}
+
+  .card-body{padding:12px 13px 13px;display:flex;flex-direction:column;flex:1;}
+  .card-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+  .card-title{font-size:15px;margin:0;font-weight:600;line-height:1.35;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .price{color:#e8503a;font-weight:700;font-size:16px;white-space:nowrap;}
+  .campus-tag{display:inline-block;margin-top:8px;font-size:12px;color:var(--primary);
+    background:#eef3ff;border-radius:6px;padding:2px 8px;align-self:flex-start;}
+  .desc{font-size:13px;color:var(--muted);margin:8px 0 0;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+    overflow:hidden;word-break:break-word;}
+  .contact{display:flex;align-items:center;gap:6px;margin-top:10px;
+    background:#f7f9fc;border:1px dashed var(--border);border-radius:10px;
+    padding:6px 9px;font-size:13px;}
+  .contact-label{color:var(--muted);font-size:12px;flex:none;}
+  .contact-value{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
+  .copy-btn{flex:none;border:none;background:#e8eeff;color:var(--primary);
+    border-radius:6px;padding:3px 8px;font-size:12px;cursor:pointer;font-family:inherit;}
+  .copy-btn:hover{background:#dbe6ff;}
+  .card-footer{display:flex;align-items:center;justify-content:space-between;
+    gap:8px;margin-top:auto;padding-top:10px;flex-wrap:wrap;}
+  .time{font-size:12px;color:#a5aeb9;}
+  .owner-actions{display:flex;gap:6px;}
+
+  .empty{text-align:center;padding:70px 20px;color:var(--muted);}
+  .empty-icon{font-size:44px;margin-bottom:8px;}
+  .empty p{margin:0 0 16px;font-size:14px;}
+
+  .site-footer{border-top:1px solid var(--border);background:#fff;
+    padding:18px 0;text-align:center;font-size:12.5px;color:var(--muted);}
+
+  .modal{position:fixed;inset:0;z-index:50;display:flex;align-items:center;
+    justify-content:center;padding:16px;}
+  .modal[hidden]{display:none;}
+  .modal-backdrop{position:absolute;inset:0;background:rgba(15,22,34,.45);backdrop-filter:blur(2px);}
+  .modal-card{position:relative;background:#fff;border-radius:18px;width:100%;
+    max-width:520px;max-height:90vh;overflow-y:auto;
+    box-shadow:0 24px 60px rgba(15,22,34,.28);animation:pop .22s ease-out;}
+  @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.98);}to{opacity:1;transform:none;}}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;
+    padding:18px 20px 12px;border-bottom:1px solid var(--border);position:sticky;
+    top:0;background:#fff;border-radius:18px 18px 0 0;z-index:1;}
+  .modal-head h2{margin:0;font-size:17px;}
+
+  .form{padding:18px 20px 20px;display:flex;flex-direction:column;gap:14px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:13.5px;font-weight:600;color:#3c4757;}
+  .req{color:#e8503a;}
+  .form input[type="text"],.form input[type="number"],.form input[type="file"],
+  .form textarea{font-family:inherit;font-size:14px;color:var(--text);
+    border:1px solid var(--border);border-radius:10px;padding:10px 12px;
+    background:#fafbfd;outline:none;transition:.18s;width:100%;}
+  .form textarea{resize:vertical;min-height:88px;}
+  .form input:focus,.form textarea:focus{border-color:var(--primary);
+    background:#fff;box-shadow:0 0 0 3px rgba(47,109,246,.12);}
+  .form input[type="file"]{padding:8px;background:#fff;cursor:pointer;font-size:13px;}
+  .row{display:flex;gap:12px;}
+  .row .field{flex:1;min-width:0;}
+  .hint{margin:0;font-size:12px;color:#a5aeb9;}
+
+  .preview{position:relative;margin-top:8px;border-radius:12px;overflow:hidden;
+    border:1px solid var(--border);}
+  .preview img{display:block;width:100%;max-height:220px;object-fit:cover;}
+  .preview button{position:absolute;top:8px;right:8px;border:none;border-radius:8px;
+    background:rgba(15,22,34,.7);color:#fff;font-size:12px;padding:4px 10px;
+    cursor:pointer;font-family:inherit;}
+
+  .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px;}
+
+  #toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
+    background:rgba(17,24,39,.93);color:#fff;padding:10px 20px;border-radius:999px;
+    font-size:13.5px;opacity:0;pointer-events:none;transition:.26s;z-index:100;
+    box-shadow:0 8px 24px rgba(15,22,34,.3);}
+  #toast.show{opacity:1;transform:translate(-50%,0);}
+
+  @media (max-width:600px){
+    .brand h1{font-size:16px;}
+    .tagline{display:none;}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+    .price{font-size:15px;}
+    .toolbar select{flex:1 1 120px;}
+    .row{flex-direction:column;gap:14px;}
+    .modal{padding:0;align-items:flex-end;}
+    .modal-card{max-width:100%;border-radius:18px 18px 0 0;max-height:94vh;}
+    .modal-head{border-radius:18px 18px 0 0;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="brand">
+      <div class="logo">🎒</div>
+      <div>
+        <h1>校园二手集市</h1>
+        <p class="tagline">信息共享 · 自由浏览 · 自行联系</p>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="openFormBtn" type="button">+ 发布物品</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="disclaimer">
+    ⚠️ 本平台仅提供二手物品信息展示，不提供在线沟通与交易功能。请自行核实信息真伪，建议线下当面交易，注意人身与财产安全。
+  </p>
+
+  <section class="toolbar">
+    <input id="searchInput" type="search" placeholder="🔍 搜索物品名称或描述…" autocomplete="off">
+    <select id="campusFilter" aria-label="按校区筛选">
+      <option value="">全部校区</option>
+    </select>
+    <select id="sortSelect" aria-label="排序方式">
+      <option value="new">最新发布</option>
+      <option value="priceAsc">价格从低到高</option>
+      <option value="priceDesc">价格从高到低</option>
+    </select>
+    <button class="btn btn-ghost" id="refreshBtn" type="button">刷新</button>
+  </section>
+
+  <div class="stats" id="stats"></div>
+
+  <section class="grid" id="grid"></section>
+
+  <div class="empty" id="empty" hidden>
+    <div class="empty-icon">📦</div>
+    <p>这里还没有物品，来发布第一件吧～</p>
+    <button class="btn btn-primary" id="emptyBtn" type="button">发布物品</button>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">校园二手集市 · 仅用于信息共享，不参与任何交易</div>
+</footer>
+
+<!-- ============ 发布弹窗 ============ -->
+<div class="modal" id="formModal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+    <div class="modal-head">
+      <h2 id="formTitle">发布物品</h2>
+      <button class="icon-btn" type="button" data-close aria-label="关闭">✕</button>
+    </div>
+
+    <form id="itemForm" class="form" novalidate>
+      <div class="field">
+        <label for="f-campus">校区 <span class="req">*</span></label>
+        <input id="f-campus" name="campus" type="text" list="campusList"
+               placeholder="例如：东校区" maxlength="20" required>
+        <datalist id="campusList"></datalist>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="f-name">物品名称 <span class="req">*</span></label>
+          <input id="f-name" name="name" type="text" maxlength="40"
+                 placeholder="例如：九成新自行车" required>
+        </div>
+        <div class="field">
+          <label for="f-price">价格（元）</label>
+          <input id="f-price" name="price" type="number" min="0" step="0.01"
+                 placeholder="留空表示面议">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="f-desc">物品描述</label>
+        <textarea id="f-desc" name="description" rows="4" maxlength="500"
+                  placeholder="成色、使用时长、有无配件、交易地点等…"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="imageInput">物品图片</label>
+        <input id="imageInput" type="file" accept="image/*">
+        <div class="preview" id="preview" hidden></div>
+        <p class="hint">支持 jpg / png，图片会自动压缩后上传。</p>
+      </div>
+
+      <div class="field">
+        <label for="f-contact">联系方式 <span class="req">*</span></label>
+        <input id="f-contact" name="contact" type="text" maxlength="60"
+               placeholder="微信 / 手机号 / QQ" required>
+        <p class="hint">联系方式将公开展示，请自行判断信息安全。</p>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close>取消</button>
+        <button type="submit" class="btn btn-primary" id="submitBtn">确认发布</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const OWNERS_KEY = 'campus_market_owners_v1';
+  const CAMPUS_SUGGEST = ['东校区', '西校区', '南校区', '北校区', '主校区'];
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+
+  const grid         = $('#grid');
+  const emptyEl      = $('#empty');
+  const statsEl      = $('#stats');
+  const searchInput  = $('#searchInput');
+  const campusFilter = $('#campusFilter');
+  const sortSelect   = $('#sortSelect');
+  const refreshBtn   = $('#refreshBtn');
+  const formModal    = $('#formModal');
+  const itemForm     = $('#itemForm');
+  const imageInput   = $('#imageInput');
+  const previewEl    = $('#preview');
+  const campusDatalist = $('#campusList');
+  const submitBtn    = $('#submitBtn');
+
+  let items = [];
+  let owners = {};
+  let pendingImage = '';
+  let submitting = false;
+
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function priceValue(p) {
+    if (p === '' || p === null || p === undefined) return Infinity;
+    const n = Number(p);
+    return isNaN(n) ? Infinity : n;
+  }
+
+  function formatPrice(p) {
+    const v = priceValue(p);
+    if (v === Infinity) return '面议';
+    return '¥' + (Number.isInteger(v) ? v.toLocaleString('zh-CN') : v.toFixed(2));
+  }
+
+  function timeAgo(ts) {
+    const diff = Date.now() - ts;
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return '刚刚';
+    if (m < 60) return m + ' 分钟前';
+    const h = Math.floor(m / 60);
+    if (h < 24) return h + ' 小时前';
+    const d = Math.floor(h / 24);
+    if (d < 30) return d + ' 天前';
+    return new Date(ts).toLocaleDateString('zh-CN');
+  }
+
+  let toastTimer = null;
+  function toast(msg) {
+    let el = document.getElementById('toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 1900);
+  }
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast('联系方式已复制');
+    } catch (err) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); toast('联系方式已复制'); }
+      catch (e) { toast('复制失败，请手动选择'); }
+      ta.remove();
+    }
+  }
+
+  function loadOwners() {
+    try { owners = JSON.parse(localStorage.getItem(OWNERS_KEY) || '{}') || {}; }
+    catch (e) { owners = {}; }
+  }
+  function saveOwners() {
+    try { localStorage.setItem(OWNERS_KEY, JSON.stringify(owners)); } catch (e) {}
+  }
+
+  async function fetchItems(silent) {
+    if (!silent) {
+      grid.innerHTML = '';
+      emptyEl.hidden = true;
+      statsEl.textContent = '正在加载…';
+    }
+    try {
+      const res = await fetch('/api/items', { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      items = Array.isArray(data.items) ? data.items : [];
+      refreshCampusOptions();
+      render();
+      return true;
+    } catch (err) {
+      console.error(err);
+      statsEl.textContent = '';
+      grid.innerHTML = '';
+      emptyEl.hidden = false;
+      emptyEl.querySelector('p').textContent = '加载失败，请检查网络后点击「刷新」重试。';
+      return false;
+    }
+  }
+
+  async function apiCreate(payload) {
+    const res = await fetch('/api/items', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || '发布失败');
+    return data;
+  }
+
+  async function apiUpdate(id, status) {
+    const res = await fetch('/api/items/' + encodeURIComponent(id), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ownerKey: owners[id], status })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || '操作失败');
+    return data.item;
+  }
+
+  async function apiDelete(id) {
+    const res = await fetch('/api/items/' + encodeURIComponent(id), {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ownerKey: owners[id] })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || '删除失败');
+    return true;
+  }
+
+  function cardHtml(it) {
+    const isMine = !!owners[it.id];
+    const sold = it.status === 'sold';
+
+    return `
+      <article class="card${sold ? ' is-sold' : ''}" data-id="${it.id}">
+        <div class="thumb">
+          ${it.image
+            ? `<img src="${it.image}" alt="${escapeHtml(it.name)}" loading="lazy">`
+            : `<div class="thumb-placeholder">暂无图片</div>`}
+          ${sold ? `<span class="badge-sold">已下架</span>` : ``}
+          ${isMine ? `<span class="badge-mine">我的发布</span>` : ``}
+        </div>
+
+        <div class="card-body">
+          <div class="card-title-row">
+            <h3 class="card-title">${escapeHtml(it.name)}</h3>
+            <span class="price">${formatPrice(it.price)}</span>
+          </div>
+
+          <span class="campus-tag">${escapeHtml(it.campus)}</span>
+
+          ${it.description ? `<p class="desc">${escapeHtml(it.description)}</p>` : ``}
+
+          <div class="contact">
+            <span class="contact-label">联系方式</span>
+            <span class="contact-value" title="${escapeHtml(it.contact)}">${escapeHtml(it.contact)}</span>
+            <button class="copy-btn" type="button" data-copy="${escapeHtml(it.contact)}">复制</button>
+          </div>
+
+          <div class="card-footer">
+            <span class="time">${timeAgo(it.createdAt)}</span>
+            ${isMine ? `
+              <div class="owner-actions">
+                <button class="btn btn-sm" type="button" data-action="toggle">
+                  ${sold ? '重新上架' : '标记已下架'}
+                </button>
+                <button class="btn btn-sm btn-ghost" type="button" data-action="delete">删除</button>
+              </div>` : ``}
+          </div>
+        </div>
+      </article>`;
+  }
+
+  function render() {
+    const kw     = searchInput.value.trim().toLowerCase();
+    const campus = campusFilter.value;
+    const sort   = sortSelect.value;
+
+    let list = items.filter((it) => {
+      if (campus && it.campus !== campus) return false;
+      if (kw) {
+        const hay = `${it.name || ''} ${it.description || ''} ${it.campus || ''}`.toLowerCase();
+        if (!hay.includes(kw)) return false;
+      }
+      return true;
+    });
+
+    list.sort((a, b) => {
+      if (sort === 'priceAsc' || sort === 'priceDesc') {
+        const av = priceValue(a.price);
+        const bv = priceValue(b.price);
+        if (av === bv) return b.createdAt - a.createdAt;
+        if (av === Infinity) return 1;
+        if (bv === Infinity) return -1;
+        return sort === 'priceAsc' ? av - bv : bv - av;
+      }
+      return b.createdAt - a.createdAt;
+    });
+
+    grid.innerHTML = list.map(cardHtml).join('');
+    grid.hidden = list.length === 0;
+    emptyEl.hidden = list.length > 0;
+    if (list.length === 0) {
+      emptyEl.querySelector('p').textContent = items.length
+        ? '没有符合条件的物品，换个关键词试试～'
+        : '这里还没有物品，来发布第一件吧～';
+    }
+
+    const soldCount = items.filter((i) => i.status === 'sold').length;
+    statsEl.textContent = items.length
+      ? `共 ${items.length} 件物品 · 展示中 ${items.length - soldCount} 件 · 已下架 ${soldCount} 件`
+      : '';
+  }
+
+  function refreshCampusOptions() {
+    const set = new Set(CAMPUS_SUGGEST);
+    items.forEach((it) => { if (it.campus) set.add(it.campus); });
+
+    const cur = campusFilter.value;
+    campusFilter.innerHTML = '<option value="">全部校区</option>' +
+      [...set].map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    campusFilter.value = cur;
+
+    campusDatalist.innerHTML = [...set]
+      .map((c) => `<option value="${escapeHtml(c)}"></option>`).join('');
+  }
+
+  function openForm() {
+    itemForm.reset();
+    pendingImage = '';
+    previewEl.hidden = true;
+    previewEl.innerHTML = '';
+    formModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => { const el = $('#f-campus'); if (el) el.focus(); }, 60);
+  }
+
+  function closeForm() {
+    formModal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function compressImage(file, maxSize = 1000, quality = 0.75) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('读取图片失败'));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('解析图片失败'));
+        img.onload = () => {
+          let { width, height } = img;
+          const scale = Math.min(1, maxSize / Math.max(width, height));
+          width  = Math.max(1, Math.round(width * scale));
+          height = Math.max(1, Math.round(height * scale));
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, width, height);
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  $('#openFormBtn').addEventListener('click', openForm);
+  $('#emptyBtn').addEventListener('click', openForm);
+  refreshBtn.addEventListener('click', () => fetchItems());
+
+  formModal.addEventListener('click', (e) => {
+    if (e.target.closest('[data-close]')) closeForm();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !formModal.hidden) closeForm();
+  });
+
+  searchInput.addEventListener('input', render);
+  campusFilter.addEventListener('change', render);
+  sortSelect.addEventListener('change', render);
+
+  imageInput.addEventListener('change', async () => {
+    const file = imageInput.files && imageInput.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast('请选择图片文件');
+      imageInput.value = '';
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast('图片不能超过 10MB');
+      imageInput.value = '';
+      return;
+    }
+
+    try {
+      pendingImage = await compressImage(file);
+      previewEl.innerHTML =
+        `<img src="${pendingImage}" alt="预览"><button type="button" id="clearImg">移除图片</button>`;
+      previewEl.hidden = false;
+    } catch (err) {
+      toast('图片处理失败，请换一张试试');
+      imageInput.value = '';
+    }
+  });
+
+  previewEl.addEventListener('click', (e) => {
+    if (e.target.id === 'clearImg') {
+      pendingImage = '';
+      imageInput.value = '';
+      previewEl.hidden = true;
+      previewEl.innerHTML = '';
+    }
+  });
+
+  itemForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (submitting) return;
+
+    const fd = new FormData(itemForm);
+    const campus      = (fd.get('campus') || '').toString().trim();
+    const name        = (fd.get('name') || '').toString().trim();
+    const description = (fd.get('description') || '').toString().trim();
+    const contact     = (fd.get('contact') || '').toString().trim();
+    const priceRaw    = (fd.get('price') || '').toString().trim();
+
+    if (!campus)  { toast('请填写校区');   return; }
+    if (!name)    { toast('请填写物品名称'); return; }
+    if (!contact) { toast('请填写联系方式'); return; }
+
+    const payload = {
+      campus, name, description, contact,
+      price: priceRaw === '' ? null : Number(priceRaw),
+      image: pendingImage || null
+    };
+
+    submitting = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = '发布中…';
+
+    try {
+      const data = await apiCreate(payload);
+      owners[data.item.id] = data.ownerKey;
+      saveOwners();
+
+      items.unshift(data.item);
+      refreshCampusOptions();
+      render();
+      closeForm();
+      toast('发布成功！');
+    } catch (err) {
+      console.error(err);
+      toast(err.message || '发布失败，请重试');
+    } finally {
+      submitting = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = '确认发布';
+    }
+  });
+
+  grid.addEventListener('click', async (e) => {
+    const copyBtn = e.target.closest('[data-copy]');
+    if (copyBtn) {
+      copyText(copyBtn.dataset.copy);
+      return;
+    }
+
+    const actionBtn = e.target.closest('[data-action]');
+    if (!actionBtn) return;
+
+    const card = e.target.closest('.card');
+    if (!card) return;
+    const id = card.dataset.id;
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    if (!owners[id]) {
+      toast('本机没有该物品的发布凭证，无法操作');
+      return;
+    }
+
+    const action = actionBtn.dataset.action;
+    actionBtn.disabled = true;
+
+    try {
+      if (action === 'toggle') {
+        const next = item.status === 'sold' ? 'active' : 'sold';
+        const updated = await apiUpdate(id, next);
+        item.status = updated.status;
+        render();
+        toast(updated.status === 'sold' ? '已标记为下架' : '已重新上架');
+      }
+
+      if (action === 'delete') {
+        if (!confirm(`确定要删除「${item.name}」吗？此操作不可恢复。`)) {
+          actionBtn.disabled = false;
+          return;
+        }
+        await apiDelete(id);
+        items = items.filter((i) => i.id !== id);
+        delete owners[id];
+        saveOwners();
+        refreshCampusOptions();
+        render();
+        toast('已删除');
+      }
+    } catch (err) {
+      console.error(err);
+      toast(err.message || '操作失败，请重试');
+      actionBtn.disabled = false;
+    }
+  });
+
+  loadOwners();
+  fetchItems();
+
+})();
+</script>
+</body>
+</html>

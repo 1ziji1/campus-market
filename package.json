@@ -1,0 +1,13 @@
+{
+  "name": "campus-market",
+  "version": "1.0.0",
+  "private": true,
+  "description": "校园二手集市 · 信息共享平台",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
